@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#03040C">
+<title>Pour Mariam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Italiana&family=Jost:wght@200;300;400&family=Parisienne&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --nuit:#03040C; --or:#D8B15C; --or-clair:#F3E0AE; --ivoire:#F6EFE1; --rose:#E8456A;
+    --display:"Italiana",Georgia,serif; --corps:"Cormorant Garamond",Georgia,serif;
+    --ui:"Jost","Helvetica Neue",sans-serif; --script:"Parisienne",cursive;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;
+    -webkit-touch-callout:none;user-select:none}
+  html,body{height:100%;overflow:hidden;background:var(--nuit);color:var(--ivoire);
+    font-family:var(--ui);overscroll-behavior:none;overscroll-behavior-x:none;
+    position:fixed;width:100%;touch-action:none}
+  .nebuleuse{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(58% 40% at 18% 12%,rgba(104,42,168,.34),transparent 66%),
+      radial-gradient(52% 36% at 86% 24%,rgba(24,86,190,.24),transparent 68%),
+      radial-gradient(64% 42% at 78% 84%,rgba(214,46,120,.20),transparent 70%),
+      radial-gradient(70% 46% at 26% 92%,rgba(20,52,150,.26),transparent 72%),
+      radial-gradient(120% 85% at 50% 50%,transparent 42%,rgba(0,0,0,.62) 100%)}
+  canvas{position:fixed;inset:0;z-index:1;touch-action:none;display:block}
+  .assombri{position:fixed;inset:0;z-index:2;pointer-events:none;background:rgba(2,3,9,.58);
+    opacity:0;transition:opacity .55s}
+  .assombri.on{opacity:1}
+
+  .hud{position:fixed;inset:0;z-index:3;pointer-events:none;display:flex;flex-direction:column;
+    justify-content:space-between;
+    padding:calc(env(safe-area-inset-top,0px) + 22px) 20px calc(env(safe-area-inset-bottom,0px) + 20px)}
+  .haut,.bas{text-align:center;transition:opacity .9s}
+  .voile{opacity:0}
+  .sur{font-family:var(--ui);font-weight:300;font-size:8.5px;letter-spacing:.4em;
+    text-transform:uppercase;color:var(--or)}
+  .consigne{font-family:var(--corps);font-style:italic;font-size:clamp(14px,4.2vw,16.5px);
+    line-height:1.5;color:rgba(246,239,225,.62);margin:9px auto 0;max-width:290px}
+  .compteur{font-family:var(--display);font-size:14px;letter-spacing:.24em;color:var(--or-clair);opacity:.9}
+  .compteur small{font-family:var(--ui);font-weight:200;font-size:8px;letter-spacing:.28em;
+    text-transform:uppercase;color:rgba(246,239,225,.38);display:block;margin-top:6px}
+  .barre{width:120px;height:1px;background:rgba(246,239,225,.13);margin:11px auto 0;position:relative}
+  .barre i{position:absolute;left:0;top:0;height:100%;width:0;background:var(--or);
+    box-shadow:0 0 8px var(--or);transition:width .8s cubic-bezier(.2,.9,.3,1)}
+  .astuce{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 26px);
+    z-index:3;text-align:center;pointer-events:none;font-family:var(--corps);font-style:italic;
+    font-size:14.5px;color:rgba(246,239,225,.42);opacity:0;transition:opacity 1s}
+  .astuce.on{opacity:1}
+
+  .carte{position:fixed;left:0;right:0;bottom:0;z-index:5;
+    padding:0 14px calc(env(safe-area-inset-bottom,0px) + 14px);
+    transform:translateY(115%);transition:transform .62s cubic-bezier(.19,.9,.24,1);pointer-events:none}
+  .carte.ouverte{transform:translateY(0);pointer-events:auto}
+  .carte__in{position:relative;background:linear-gradient(168deg,#150F28 0%,#080714 100%);
+    border:1px solid rgba(216,177,92,.42);border-radius:4px;padding:28px 22px 24px;
+    box-shadow:0 -22px 60px -18px rgba(0,0,0,.95),inset 0 1px 0 rgba(216,177,92,.2)}
+  .carte.ouverte .carte__in{animation:lueur 1.2s ease-out}
+  @keyframes lueur{
+    0%{box-shadow:0 -22px 60px -18px rgba(0,0,0,.95),inset 0 1px 0 rgba(216,177,92,.2),0 0 48px 6px rgba(216,177,92,.42)}
+    100%{box-shadow:0 -22px 60px -18px rgba(0,0,0,.95),inset 0 1px 0 rgba(216,177,92,.2),0 0 0 0 rgba(216,177,92,0)}}
+  .carte__n{font-family:var(--ui);font-weight:200;font-size:8px;letter-spacing:.36em;
+    text-transform:uppercase;color:var(--or);text-align:center}
+  .carte__n::after{content:"";display:block;width:22px;height:1px;margin:9px auto 0;
+    background:linear-gradient(90deg,transparent,var(--or),transparent)}
+  .carte__t{font-family:var(--corps);font-size:clamp(18px,5.3vw,23px);line-height:1.45;
+    text-align:center;margin-top:15px;color:var(--ivoire);min-height:66px;
+    display:flex;align-items:center;justify-content:center;flex-wrap:wrap}
+  .carte__t span{display:inline-block;opacity:0;filter:blur(6px);transform:translateY(6px);
+    animation:mot .5s cubic-bezier(.2,.9,.3,1) forwards;white-space:pre}
+  @keyframes mot{to{opacity:1;filter:blur(0);transform:none}}
+  .fermer{display:block;margin:20px auto 0;background:none;border:1px solid rgba(246,239,225,.2);
+    color:rgba(246,239,225,.5);border-radius:2px;padding:11px 26px;font-family:var(--ui);
+    font-weight:300;font-size:9px;letter-spacing:.28em;text-transform:uppercase;cursor:pointer;transition:.3s}
+  .fermer:active,.fermer:hover{border-color:var(--or);color:var(--or)}
+
+  .final{position:fixed;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;
+    padding:24px 18px;background:radial-gradient(65% 55% at 50% 50%,rgba(6,5,16,.9),rgba(3,4,12,.98));
+    opacity:0;pointer-events:none;transition:opacity 1.1s;overflow-y:auto}
+  .final.on{opacity:1;pointer-events:auto}
+  .final__in{max-width:400px;text-align:center;border:1px solid rgba(216,177,92,.26);border-radius:3px;
+    padding:32px 22px 26px;background:rgba(8,7,20,.6);margin:auto}
+  .final__t{font-family:var(--display);font-size:clamp(22px,6.6vw,27px);line-height:1.25}
+  .final__p{font-family:var(--corps);font-size:clamp(16px,4.6vw,18px);line-height:1.6;
+    color:rgba(246,239,225,.78);margin-top:16px}
+  .final__s{font-family:var(--script);font-size:29px;color:var(--or-clair);margin-top:18px}
+  .actions{display:flex;gap:8px;margin-top:24px}
+  .act{flex:1;text-align:center;text-decoration:none;cursor:pointer;border:1px solid var(--or);
+    color:var(--or-clair);background:transparent;border-radius:2px;padding:13px 6px;
+    font-family:var(--ui);font-weight:300;font-size:9px;letter-spacing:.22em;
+    text-transform:uppercase;transition:.3s}
+  .act:active,.act:hover{background:var(--or);color:#14100A}
+  .act.plein{background:linear-gradient(150deg,#F0607F,var(--rose) 60%,#B31E43);
+    border-color:transparent;color:#fff}
+
+  .appel{position:fixed;right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);z-index:4;
+    width:50px;height:50px;border-radius:50%;display:grid;place-items:center;text-decoration:none;
+    background:linear-gradient(150deg,#F0607F,var(--rose) 65%,#B31E43);color:#fff;font-size:20px;
+    box-shadow:0 12px 32px -8px rgba(232,69,106,.85);opacity:0;pointer-events:none;transition:opacity .9s}
+  .appel.vu{opacity:1;pointer-events:auto}
+  :focus-visible{outline:1px solid var(--or);outline-offset:4px}
+  @media (prefers-reduced-motion:reduce){
+    *{transition-duration:.01ms!important}
+    .carte__t span{animation-duration:.01ms!important;opacity:1!important;filter:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="nebuleuse"></div>
+<canvas id="c"></canvas>
+<div class="assombri" id="assombri"></div>
+
+<div class="hud">
+  <div class="haut voile" id="haut">
+    <p class="sur">Pour toi, quand ça ne va pas</p>
+    <p class="consigne">Fais tourner le ciel avec ton doigt.<br>Chaque étoile dorée est une raison.</p>
+  </div>
+  <div class="bas voile" id="bas">
+    <div class="compteur"><span id="cpt">0 / 24</span><small>raisons trouvées</small>
+      <div class="barre"><i id="jauge"></i></div>
+    </div>
+  </div>
+</div>
+<p class="astuce" id="astuce">Fais-le tourner avec ton doigt.</p>
+
+<a class="appel" id="appel" href="#" aria-label="Appeler">✆</a>
+
+<div class="carte" id="carte">
+  <div class="carte__in">
+    <p class="carte__n" id="carte-n">Raison nº 1</p>
+    <p class="carte__t" id="carte-t"></p>
+    <button class="fermer" id="fermer">Refermer</button>
+  </div>
+</div>
+
+<div class="final" id="final">
+  <div class="final__in">
+    <p class="final__t" id="final-t"></p>
+    <p class="final__p" id="final-p"></p>
+    <p class="final__s" id="final-s"></p>
+    <div class="actions">
+      <button class="act" id="revoir">Tout revoir</button>
+      <a class="act plein" id="appel2" href="#">Appelle-moi</a>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ==================================================================
+   À PERSONNALISER
+   ================================================================== */
+const ELLE = "Mariam";
+const LUI  = "Rishanth";
+const TEL  = "";   /* ton numéro, ex : "+33612345678"  (vide = boutons cachés) */
+
+const RAISONS = [
+  "Je me lasserai jamais de ton rire d'abruti. Je tombe amoureux à chaque fois que tu rigoles à mes blagues.",
+  "T'as un corps magnifique. T'es une femme hyper canon, de la tête aux pieds !",
+  "Je serai toujours derrière toi pour veiller à ce que tu manges correctement et que tu prennes tes médicaments.",
+  "T'es la meilleure, rien que pour tous les efforts que tu fais pour nous, pour moi.",
+  "J'ai de la chance d'avoir une copine aussi amoureuse de moi. C'est rare de nos jours.",
+  "Je te protégerai comme un père le ferait, et je t'aimerai comme un amoureux fou.",
+  "T'es vraiment drôle en vrai. Mais tg mdr.",
+  "T'as pas le droit de complexer : t'es ma femme, et ma femme c'est la plus belle de l'univers.",
+  "Je serai ta figure paternelle et ton amoureux en même temps. T'es sous ma responsabilité, ma princesse d'amour.",
+  "T'es ma première vraie relation, et elle est incroyable. Merci Mariam.",
+  "Que tu le veuilles ou non, tu slay de zinzin avec ton makeup !",
+  "Ton teint caramel m'attire trop, je te jure.",
+  "T'as un BBL naturel et ça, c'est un plus que j'apprécie beaucoup. Je fais de la pâte à modeler avec, HAHAHA.",
+  "Pour être honnête, ma vie est beaucoup plus vivante avec toi, grâce à ta présence.",
+  "J'aime trop tes lèvres, toi-même tu sais. J'ai toujours envie de les croquer, je peux pas résister.",
+  "Tu t'habilles trop bien, j'aime trop.",
+  "Tu sens tellement bon que je sors les canines comme un vampire à chaque fois.",
+  "J'ai constamment envie d'être à tes côtés, de te câliner, de t'étouffer d'amour.",
+  "Tu me fais penser à un nounours tellement t'es adorable.",
+  "Tout ce que je fais pour toi par amour, je l'avais jamais fait avant. Les lettres d'amour, tout ça. Tu mérites tout ce que je fais pour toi.",
+  "Je veux faire toutes les activités possibles avec toi.",
+  "À chaque fois que je te vois je me dis que j'ai un mannequin comme meuf, tellement t'es hyper clean, hyper belle.",
+  "Si j'étais ton papa je te dirais que je suis fier de toi, Mariam. T'es la fille la plus courageuse. Tu vas réussir à surmonter tout ça.",
+  "Lâche rien. Je suis derrière toi, je te pousserai toujours vers le haut. Crois en toi."
+];
+
+const FINAL_TITRE = "Tu les as toutes trouvées.";
+const FINAL_TEXTE = "Je sais pas ce qui va pas aujourd'hui. Mais je sais que ça va passer, et que je serai là quand ça passera. Reviens ici autant de fois que tu veux, les étoiles s'éteignent pas. Et si c'est trop lourd, appelle-moi. Même à 3h du matin. Surtout à 3h du matin.";
+/* ================================================================== */
+
+const cv=document.getElementById("c"), ctx=cv.getContext("2d");
+
+/* ---------- on empêche le navigateur de voler le geste ----------
+   (retour arrière en glissant depuis le bord, tirer-pour-rafraîchir,
+    zoom à deux doigts, menu au appui long) — sans casser les boutons */
+function estBouton(e){
+  const t=e.target;
+  return t && t.closest && t.closest("button,a");
+}
+/* le geste "retour" ne part que des bords : on ne neutralise que ces bandes */
+document.addEventListener("touchstart", e=>{
+  if(estBouton(e) || !e.touches[0] || !e.cancelable) return;
+  const x=e.touches[0].clientX;
+  if(x < 28 || x > innerWidth-28) e.preventDefault();
+},{passive:false});
+/* tout glissement est à nous : plus de scroll, plus de tirer-pour-rafraîchir */
+document.addEventListener("touchmove", e=>{
+  if(!estBouton(e) && e.cancelable) e.preventDefault();
+},{passive:false});
+document.addEventListener("gesturestart", e=>e.preventDefault(), {passive:false});
+document.addEventListener("gesturechange", e=>e.preventDefault(), {passive:false});
+document.addEventListener("contextmenu", e=>e.preventDefault());
+/* si le navigateur coupe quand même le geste, on ne reste pas bloqué en "drag" */
+addEventListener("blur", ()=>{ drag=false; });
+let W=0,H=0,CX=0,CY=0,DPR=1,ECH=1,PETIT=innerWidth<700;
+function dim(){
+  PETIT=innerWidth<700;
+  DPR=Math.min(devicePixelRatio||1, PETIT?1.75:2);
+  W=innerWidth; H=innerHeight;
+  cv.width=W*DPR; cv.height=H*DPR;
+  cv.style.width=W+"px"; cv.style.height=H+"px";
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  CX=W/2; CY=H/2; ECH=Math.min(W,H)/580;
+}
+dim(); addEventListener("resize",dim);
+addEventListener("orientationchange",()=>setTimeout(dim,220));
+
+/* ---------- palette de lueurs ---------- */
+function sprite(r,v,b){
+  const t=64,e=document.createElement("canvas"); e.width=e.height=t;
+  const g=e.getContext("2d"), rg=g.createRadialGradient(t/2,t/2,0,t/2,t/2,t/2);
+  rg.addColorStop(0,"rgba("+r+","+v+","+b+",1)");
+  rg.addColorStop(.22,"rgba("+r+","+v+","+b+",.52)");
+  rg.addColorStop(1,"rgba("+r+","+v+","+b+",0)");
+  g.fillStyle=rg; g.fillRect(0,0,t,t); return e;
+}
+const BLANC   = sprite(255,247,232);
+const OR      = sprite(255,214,130);
+const AMBRE   = sprite(255,168,88);
+const ROSE    = sprite(255,116,168);
+const FUCHSIA = sprite(255,52,120);
+const VIOLET  = sprite(176,74,255);
+const BLEU    = sprite(96,164,255);
+const CYAN    = sprite(120,232,255);
+
+/* flare 4 branches pour les étoiles-raisons */
+const FLARE=(function(){
+  const t=128,e=document.createElement("canvas"); e.width=e.height=t;
+  const g=e.getContext("2d"), c=t/2;
+  let lg=g.createLinearGradient(0,c,t,c);
+  lg.addColorStop(0,"rgba(255,236,190,0)"); lg.addColorStop(.5,"rgba(255,248,224,.95)");
+  lg.addColorStop(1,"rgba(255,236,190,0)");
+  g.fillStyle=lg; g.fillRect(0,c-1.1,t,2.2);
+  lg=g.createLinearGradient(c,0,c,t);
+  lg.addColorStop(0,"rgba(255,236,190,0)"); lg.addColorStop(.5,"rgba(255,248,224,.95)");
+  lg.addColorStop(1,"rgba(255,236,190,0)");
+  g.fillStyle=lg; g.fillRect(c-1.1,0,2.2,t);
+  const rg=g.createRadialGradient(c,c,0,c,c,t*.24);
+  rg.addColorStop(0,"rgba(255,250,232,1)"); rg.addColorStop(.35,"rgba(255,214,130,.6)");
+  rg.addColorStop(1,"rgba(255,214,130,0)");
+  g.fillStyle=rg; g.fillRect(0,0,t,t);
+  return e;
+})();
+
+/* nuages de nébuleuse */
+function nuage(r,v,b){
+  const t=256,e=document.createElement("canvas"); e.width=e.height=t;
+  const g=e.getContext("2d");
+  for(let i=0;i<5;i++){
+    const x=t/2+(Math.random()-.5)*70, y=t/2+(Math.random()-.5)*70, ray=t*(.22+Math.random()*.24);
+    const rg=g.createRadialGradient(x,y,0,x,y,ray);
+    rg.addColorStop(0,"rgba("+r+","+v+","+b+",.30)");
+    rg.addColorStop(1,"rgba("+r+","+v+","+b+",0)");
+    g.fillStyle=rg; g.fillRect(0,0,t,t);
+  }
+  return e;
+}
+const NUAGES=[
+  {sp:nuage(126,52,214), x:-230, y:-120, z:-180, t:520},
+  {sp:nuage(26,92,206),  x: 260, y:  90, z: 140, t:600},
+  {sp:nuage(214,46,120), x:  40, y: 200, z:-260, t:480},
+  {sp:nuage(60,180,220), x:-180, y: 160, z: 240, t:440}
+];
+
+/* ---------- géométries ---------- */
+function ptCoeur(){
+  const t=Math.random()*Math.PI*2, k=Math.pow(Math.random(),.40);
+  let x=16*Math.pow(Math.sin(t),3);
+  let y=13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);
+  x*=k; y*=k;
+  const ep=Math.sqrt(Math.max(0,1-k*k));
+  return {x:x*14.5, y:-y*14.5, z:(Math.random()*2-1)*54*ep, k:k};
+}
+function couleurCoeur(k){
+  if(k<.22) return Math.random()<.55?BLANC:OR;
+  if(k<.45) return Math.random()<.5?OR:AMBRE;
+  if(k<.68) return Math.random()<.55?ROSE:AMBRE;
+  if(k<.88) return Math.random()<.6?FUCHSIA:ROSE;
+  return Math.random()<.5?VIOLET:FUCHSIA;
+}
+/* galaxie spirale : disque à 3 bras + bulbe + halo */
+function ptGalaxie(){
+  if(Math.random()<.24){                       /* halo d'étoiles lointaines */
+    const u=Math.random()*2-1,a=Math.random()*Math.PI*2,s=Math.sqrt(1-u*u),r=190+Math.random()*330;
+    return {x:Math.cos(a)*s*r, y:u*r, z:Math.sin(a)*s*r, t:1.2};
+  }
+  const t=Math.random();
+  const r=52+Math.pow(t,.72)*350;
+  const bras=Math.floor(Math.random()*3)*(6.2832/3);
+  const a=bras + r*.0118 + (Math.random()-.5)*(.62-t*.22);
+  const ep=(62*(1-t*.72)+7);
+  const y=(Math.random()+Math.random()+Math.random()-1.5)*ep;
+  return {x:Math.cos(a)*r, y:y, z:Math.sin(a)*r, t:t};
+}
+function couleurGalaxie(t){
+  if(t>1.1) return Math.random()<.7?BLANC:BLEU;      /* halo */
+  if(t<.10) return Math.random()<.6?BLANC:OR;        /* bulbe */
+  if(t<.28) return Math.random()<.55?OR:AMBRE;
+  if(t<.52) return Math.random()<.5?BLANC:BLEU;
+  if(t<.76) return Math.random()<.55?BLEU:CYAN;
+  return Math.random()<.5?VIOLET:ROSE;
+}
+function ptsTexte(txt){
+  const L=640,Ht=200,e=document.createElement("canvas"); e.width=L; e.height=Ht;
+  const g=e.getContext("2d");
+  g.fillStyle="#fff"; g.textAlign="center"; g.textBaseline="middle";
+  let s=118; g.font="700 "+s+"px Georgia, serif";
+  while(g.measureText(txt).width>L-60 && s>40){ s-=4; g.font="700 "+s+"px Georgia, serif"; }
+  g.fillText(txt,L/2,Ht/2);
+  const d=g.getImageData(0,0,L,Ht).data, o=[];
+  for(let y=0;y<Ht;y+=3) for(let x=0;x<L;x+=3)
+    if(d[(y*L+x)*4+3]>130) o.push({x:(x-L/2)*.64,y:(y-Ht/2)*.64,z:(Math.random()*2-1)*10});
+  for(let i=o.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[o[i],o[j]]=[o[j],o[i]];}
+  return o;
+}
+function ptSphere(r){
+  const u=Math.random()*2-1,t=Math.random()*Math.PI*2,s=Math.sqrt(1-u*u);
+  return {x:Math.cos(t)*s*r,y:u*r,z:Math.sin(t)*s*r};
+}
+
+const N = PETIT ? 1150 : 1750;
+const P=[];
+for(let i=0;i<N;i++){
+  const d=ptSphere(950+Math.random()*750);
+  P.push({x:d.x,y:d.y,z:d.z,tx:d.x,ty:d.y,tz:d.z,a:0,ta:1,sp:BLANC,t:Math.random()*7,g:1});
+}
+const RS=[];
+(function(){
+  const n=RAISONS.length, R=262;
+  for(let i=0;i<n;i++){
+    const y=1-(i/(n-1))*2, r=Math.sqrt(Math.max(0,1-y*y)), th=i*2.399963;
+    RS.push({bx:Math.cos(th)*r*R, by:y*R, bz:Math.sin(th)*r*R,
+             i:i, lue:false, flash:0, ph:Math.random()*6.28, sx:-999, sy:-999, f:1});
+  }
+})();
+const ordre=[];
+
+/* rotation libre (trackball) : matrice 3x3, aucun axe bloqué, aucun retournement */
+let R=[1,0,0, 0,1,0, 0,0,1];
+let wY=.0014, wX=0, drag=false, lx=0, ly=0, dep=0, t0=0;
+const FOV=620, SENS=.0064;
+function mul(a,b){
+  const o=new Array(9);
+  for(let i=0;i<3;i++) for(let j=0;j<3;j++)
+    o[i*3+j] = a[i*3]*b[j] + a[i*3+1]*b[3+j] + a[i*3+2]*b[6+j];
+  return o;
+}
+/* la rotation s'applique dans le repère de l'écran : glisser à droite fait
+   toujours tourner vers la droite, quelle que soit l'orientation actuelle */
+function tourne(ay,ax){
+  const cy=Math.cos(ay), sy=Math.sin(ay), cx=Math.cos(ax), sx=Math.sin(ax);
+  R = mul(mul([1,0,0, 0,cx,-sx, 0,sx,cx], [cy,0,-sy, 0,1,0, sy,0,cy]), R);
+}
+tourne(0,-.22);
+function proj(p){
+  const x = R[0]*p.x + R[1]*p.y + R[2]*p.z;
+  const y = R[3]*p.x + R[4]*p.y + R[5]*p.z;
+  const z = R[6]*p.x + R[7]*p.y + R[8]*p.z;
+  const f = FOV/(FOV + z*ECH);
+  return {sx:CX+x*ECH*f, sy:CY+y*ECH*f, f:f};
+}
+
+const ondes=[], eclats=[];
+function impact(x,y){
+  ondes.push({x:x,y:y,r:8,a:.85});
+  ondes.push({x:x,y:y,r:2,a:.55});
+  const n=PETIT?24:32;
+  for(let i=0;i<n;i++){
+    const a=Math.random()*Math.PI*2, v=1.4+Math.random()*5.4;
+    eclats.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,a:1,s:1.8+Math.random()*3.4,
+                 sp:[OR,AMBRE,ROSE,BLANC][(Math.random()*4)|0]});
+  }
+}
+let comete=null, prochaine=performance.now()+7000;
+
+/* ---------- phases ---------- */
+let phase="arrivee", T=0, tIntro=0;
+const txtNom=ptsTexte(ELLE), txtFin=ptsTexte("Je t'aime");
+function versCoeur(){
+  P.forEach(p=>{ const c=ptCoeur();
+    p.tx=c.x; p.ty=c.y; p.tz=c.z; p.ta=.75+Math.random()*.25;
+    p.sp=couleurCoeur(c.k); p.g=1.15-c.k*.35; });
+}
+function versTexte(src){
+  P.forEach((p,i)=>{
+    if(i<src.length){ const s=src[i];
+      p.tx=s.x; p.ty=s.y; p.tz=s.z; p.ta=1; p.g=1;
+      p.sp=Math.random()<.3?OR:(Math.random()<.35?ROSE:BLANC); }
+    else{ const d=ptSphere(600+Math.random()*280);
+      p.tx=d.x; p.ty=d.y; p.tz=d.z; p.ta=.09; p.sp=BLANC; p.g=1; }
+  });
+}
+function versGalaxie(){
+  P.forEach(p=>{ const d=ptGalaxie();
+    p.tx=d.x; p.ty=d.y; p.tz=d.z;
+    p.ta=d.t>1.1 ? .18+Math.random()*.3 : .3+Math.random()*.6;
+    p.sp=couleurGalaxie(d.t); p.g=d.t<.12?1.5:1; });
+}
+const haut=document.getElementById("haut"), bas=document.getElementById("bas"),
+      appel=document.getElementById("appel"), assombri=document.getElementById("assombri"),
+      astuce=document.getElementById("astuce");
+function ouvreGalaxie(){
+  if(phase==="galaxie") return;
+  phase="galaxie"; versGalaxie(); astuce.classList.remove("on");
+  haut.classList.remove("voile"); bas.classList.remove("voile");
+  if(TEL) appel.classList.add("vu");
+}
+
+/* ---------- pointeur : on peut tourner DÈS le cœur ---------- */
+cv.addEventListener("pointerdown",e=>{
+  drag=true; lx=e.clientX; ly=e.clientY; dep=0; t0=performance.now();
+  try{cv.setPointerCapture(e.pointerId);}catch(_){}
+});
+cv.addEventListener("pointermove",e=>{
+  if(!drag) return;
+  const dx=e.clientX-lx, dy=e.clientY-ly;
+  dep+=Math.abs(dx)+Math.abs(dy);
+  const ay=dx*SENS, ax=dy*SENS;
+  tourne(ay,ax);
+  /* vitesse lissée : si le doigt s'arrête avant de se lever, ça ne part pas tout seul ;
+     si elle lance le geste, ça continue de glisser */
+  wY = wY*.55 + ay*.45;
+  wX = wX*.55 + ax*.45;
+  lx=e.clientX; ly=e.clientY;
+  if(dep>30) astuce.classList.remove("on");
+});
+cv.addEventListener("pointerup",e=>{
+  drag=false;
+  const tape_ = dep<12 && performance.now()-t0<400;
+  if(!tape_) return;
+  if(phase==="galaxie") tape(e.clientX,e.clientY);
+  else if(phase!=="fin") ouvreGalaxie();     /* un simple tap passe l'intro */
+});
+cv.addEventListener("pointercancel",()=>drag=false);
+
+const carte=document.getElementById("carte"), carteN=document.getElementById("carte-n"),
+      carteT=document.getElementById("carte-t"), cpt=document.getElementById("cpt"),
+      jauge=document.getElementById("jauge"), finalE=document.getElementById("final");
+let trouvees=0;
+function ecrire(txt){
+  carteT.innerHTML="";
+  txt.split(" ").forEach((m,i)=>{
+    const s=document.createElement("span");
+    s.textContent=m+" "; s.style.animationDelay=(i*36)+"ms";
+    carteT.appendChild(s);
+  });
+}
+function ferme(){ carte.classList.remove("ouverte"); assombri.classList.remove("on"); }
+function tape(px,py){
+  if(carte.classList.contains("ouverte")){ ferme(); return; }
+  let best=null,bf=-1;
+  RS.forEach(s=>{
+    const d=(s.sx-px)*(s.sx-px)+(s.sy-py)*(s.sy-py);
+    if(d<48*48 && s.f>bf){ bf=s.f; best=s; }
+  });
+  if(!best) return;
+  best.flash=1; impact(best.sx,best.sy);
+  if(navigator.vibrate) navigator.vibrate(14);
+  if(!best.lue){
+    best.lue=true; trouvees++; ordre.push(best);
+    cpt.textContent=trouvees+" / "+RAISONS.length;
+    jauge.style.width=(trouvees/RAISONS.length*100)+"%";
+  }
+  carteN.textContent="Raison nº "+(best.i+1);
+  ecrire(RAISONS[best.i]);
+  carte.classList.add("ouverte"); assombri.classList.add("on");
+  if(trouvees===RAISONS.length) setTimeout(fini,2000);
+}
+document.getElementById("fermer").addEventListener("click",ferme);
+
+function fini(){
+  ferme(); phase="fin"; versTexte(txtFin);
+  document.getElementById("final-t").textContent=FINAL_TITRE;
+  document.getElementById("final-p").textContent=FINAL_TEXTE;
+  document.getElementById("final-s").textContent=LUI;
+  setTimeout(()=>finalE.classList.add("on"),1100);
+}
+document.getElementById("revoir").addEventListener("click",()=>{
+  finalE.classList.remove("on");
+  RS.forEach(s=>{s.lue=false;s.flash=0;}); ordre.length=0; trouvees=0;
+  cpt.textContent="0 / "+RAISONS.length; jauge.style.width="0%";
+  phase="nom"; setTimeout(()=>{ phase="nom"; ouvreGalaxie(); },450);
+});
+cpt.textContent="0 / "+RAISONS.length;
+if(TEL){ appel.href="tel:"+TEL; document.getElementById("appel2").href="tel:"+TEL; }
+else{ document.getElementById("appel2").style.display="none"; }
+
+/* ---------- rendu ---------- */
+let last=performance.now(), pause=false;
+document.addEventListener("visibilitychange",()=>{
+  pause=document.hidden;
+  if(!pause){ last=performance.now(); requestAnimationFrame(boucle); }
+});
+function boucle(now){
+  if(pause) return;
+  const dt=Math.min((now-last)/16.7,3); last=now; T+=dt;
+
+  /* l'intro attend qu'elle arrête de jouer avec le cœur */
+  if(phase!=="galaxie" && phase!=="fin"){
+    if(!drag) tIntro += dt*16.7;
+    if(phase==="arrivee" && tIntro>400){ phase="coeur"; versCoeur();
+      setTimeout(()=>{ if(phase==="coeur") astuce.classList.add("on"); },1600); }
+    else if(phase==="coeur" && tIntro>7000){ phase="nom"; versTexte(txtNom); astuce.classList.remove("on"); }
+    else if(phase==="nom" && tIntro>11000){ ouvreGalaxie(); }
+  }
+
+  if(!drag){
+    tourne(wY*dt + .0013*dt, wX*dt);
+    const frein=Math.pow(.962,dt);
+    wY*=frein; wX*=frein;
+  }
+
+  let mult=1, bat=0;
+  if(phase==="coeur"){
+    const c=(T*.028)%1;
+    bat=Math.max(0, Math.exp(-c*9)*Math.sin(c*46)+.6*Math.exp(-(c-.22)*9)*Math.sin((c-.22)*46));
+    mult=1+bat*.06;
+  }
+
+  ctx.clearRect(0,0,W,H);
+  ctx.globalCompositeOperation="lighter";
+
+  /* nébuleuses en fond */
+  if(phase==="galaxie"||phase==="fin"){
+    for(let i=0;i<NUAGES.length;i++){
+      const c=NUAGES[i], q=proj(c);
+      const s=c.t*q.f*ECH;
+      ctx.globalAlpha=.5*q.f;
+      ctx.drawImage(c.sp,q.sx-s,q.sy-s,s*2,s*2);
+    }
+  }
+  /* halo du cœur */
+  if(phase==="coeur"){
+    const s=(210+bat*40)*ECH;
+    ctx.globalAlpha=.30+bat*.22;
+    ctx.drawImage(FUCHSIA,CX-s,CY-s,s*2,s*2);
+    const s2=(120+bat*26)*ECH;
+    ctx.globalAlpha=.26+bat*.2;
+    ctx.drawImage(AMBRE,CX-s2,CY-s2,s2*2,s2*2);
+  }
+
+  for(let i=0;i<N;i++){
+    const p=P[i];
+    p.x+=(p.tx-p.x)*.055*dt; p.y+=(p.ty-p.y)*.055*dt; p.z+=(p.tz-p.z)*.055*dt;
+    p.a+=(p.ta-p.a)*.04*dt; p.t+=.03*dt;
+    const q=proj({x:p.x*mult,y:p.y*mult,z:p.z*mult});
+    if(q.f<=.05) continue;
+    const sc=phase==="galaxie"?(.6+.4*Math.sin(p.t)):(1+bat*.16);
+    const s=(phase==="galaxie"?4.6:6.8)*q.f*ECH*sc*p.g;
+    ctx.globalAlpha=Math.max(0,Math.min(1,p.a*q.f*.95));
+    ctx.drawImage(p.sp,q.sx-s,q.sy-s,s*2,s*2);
+  }
+
+  if(phase==="galaxie"){
+    for(let k=0;k<RS.length;k++){
+      const s=RS[k], q=proj({x:s.bx,y:s.by,z:s.bz});
+      s.sx=q.sx; s.sy=q.sy; s.f=q.f;
+    }
+    if(ordre.length>1){
+      ctx.lineWidth=1; ctx.strokeStyle="#D8B15C";
+      for(let k=1;k<ordre.length;k++){
+        const a=ordre[k-1], b=ordre[k];
+        ctx.globalAlpha=Math.min(.32,.32*Math.min(a.f,b.f));
+        ctx.beginPath(); ctx.moveTo(a.sx,a.sy); ctx.lineTo(b.sx,b.sy); ctx.stroke();
+      }
+    }
+    for(let k=0;k<RS.length;k++){
+      const s=RS[k];
+      s.flash*=Math.pow(.93,dt);
+      if(s.lue){
+        const t=9*s.f*ECH*(1+s.flash*2);
+        ctx.globalAlpha=Math.min(1,.45*s.f);
+        ctx.drawImage(BLANC,s.sx-t,s.sy-t,t*2,t*2);
+      }else{
+        const puls=.76+.24*Math.sin(T*.05+s.ph);
+        const t=30*s.f*ECH*puls*(1+s.flash*1.9);
+        ctx.globalAlpha=Math.min(1,.9*s.f);
+        ctx.drawImage(FLARE,s.sx-t,s.sy-t,t*2,t*2);
+      }
+    }
+  }
+
+  for(let i=ondes.length-1;i>=0;i--){
+    const o=ondes[i]; o.r+=4.2*dt; o.a-=.021*dt;
+    if(o.a<=0){ ondes.splice(i,1); continue; }
+    ctx.globalAlpha=o.a; ctx.strokeStyle="#F3E0AE"; ctx.lineWidth=1.4;
+    ctx.beginPath(); ctx.arc(o.x,o.y,o.r,0,6.2832); ctx.stroke();
+  }
+  for(let i=eclats.length-1;i>=0;i--){
+    const e=eclats[i];
+    e.x+=e.vx*dt; e.y+=e.vy*dt;
+    e.vx*=Math.pow(.955,dt); e.vy*=Math.pow(.955,dt); e.a-=.023*dt;
+    if(e.a<=0){ eclats.splice(i,1); continue; }
+    const s=e.s*e.a*2.4;
+    ctx.globalAlpha=e.a; ctx.drawImage(e.sp,e.x-s,e.y-s,s*2,s*2);
+  }
+
+  if(!comete && now>prochaine && phase==="galaxie"){
+    comete={x:Math.random()*W*.6, y:Math.random()*H*.35,
+            vx:5+Math.random()*4, vy:2.4+Math.random()*2, vie:1};
+    prochaine=now+9000+Math.random()*11000;
+  }
+  if(comete){
+    comete.x+=comete.vx*dt; comete.y+=comete.vy*dt; comete.vie-=.006*dt;
+    if(comete.vie<=0 || comete.x>W+80 || comete.y>H+80) comete=null;
+    else{
+      const g=ctx.createLinearGradient(comete.x,comete.y,comete.x-comete.vx*13,comete.y-comete.vy*13);
+      g.addColorStop(0,"rgba(246,239,225,"+(comete.vie*.75)+")");
+      g.addColorStop(1,"rgba(246,239,225,0)");
+      ctx.globalAlpha=1; ctx.strokeStyle=g; ctx.lineWidth=1.6;
+      ctx.beginPath(); ctx.moveTo(comete.x,comete.y);
+      ctx.lineTo(comete.x-comete.vx*13,comete.y-comete.vy*13); ctx.stroke();
+    }
+  }
+
+  ctx.globalAlpha=1; ctx.globalCompositeOperation="source-over";
+  requestAnimationFrame(boucle);
+}
+requestAnimationFrame(boucle);
+</script>
+</body>
+</html>
