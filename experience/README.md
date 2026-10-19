@@ -1,49 +1,54 @@
-# Mariam — Le monde que tu as allumé
+# Mariam — Les mondes de nous
 
-Un jeu romantique pour téléphone, publié dans `/Mariam/experience/`.
-La page originale à la racine et son ciel d’étoiles sont conservés intégralement.
+Un cadeau personnel jouable sur téléphone et ordinateur, inspiré des décors de la vidéo d’animation fournie par Rishanth.
 
-## Le jeu
+## Deux expériences préservées
 
-Une boule à neige en véritable 3D contient un village miniature : chalets, voiture, sapin, boîte aux lettres, personnage, luciole, neige et guirlandes. Le village tourne au doigt ; un toucher sur le sol déplace le petit personnage. Chaque souvenir terminé rallume des fenêtres et des lumières.
+- `/experience/` : l’aventure en 3D, neuf niveaux dans trois univers.
+- `/experience/story.html` : le précédent monde miniature, ses souvenirs et ses interactions, conservé intégralement.
+- `/` : le site original, ses étoiles et ses mots doux. Aucun fichier à la racine n’a été modifié.
 
-1. Retrouver le commentaire de Mariam, puis glisser une lumière vers l’enveloppe du premier message.
-2. Effacer la buée au doigt sur la vraie photo de la voiture, puis rapprocher les deux lumières.
-3. Reproduire une séquence musicale et visuelle de quatre notes, puis ouvrir trois cadeaux.
-4. Ouvrir trois lettres et remettre une phrase dans l’ordre.
-5. Finale : les lumières s’assemblent en « MARIAM », puis ouvrent la déclaration.
+## Jouer
 
-Trois souvenirs photographiques supplémentaires sont cachés près du bonhomme de neige, du banc et du petit trésor. Le carnet permet de revoir les chapitres débloqués. La progression reste sur l’appareil via `localStorage` ; on peut recommencer après une confirmation. Aucun compte, serveur applicatif, cookie de suivi ou service tiers n’est requis.
+**Téléphone** : joystick à gauche, saut et sprint à droite. Les contrôles acceptent plusieurs doigts simultanément. **Clavier** : flèches / ZQSD / WASD, Espace, Maj et Échap.
 
-Les six photos sont celles fournies par l’utilisateur ; aucun portrait ni souvenir photographique n’est généré. Le village est une interprétation fantastique, pas une reconstitution d’un lieu réel. Les commentaires sont explicitement remis en scène et les lettres sont des textes créés pour ce cadeau.
+Chaque niveau demande de récupérer trois objets puis de rejoindre le portail. Les cristaux rapportent une deuxième étoile à partir de 80 % de collecte ; un parcours sans chute ni collision rapporte la troisième. Trois vies, des points de reprise, des reprises de niveau et un chronomètre rendent les parcours rejouables. Les records et les souvenirs gagnés sont conservés localement sur l’appareil.
 
-## Musique
+| Monde | Niveaux | Mécaniques |
+| --- | --- | --- |
+| Luna Park, inspiré de Soy Luna | Premiers tours de piste ; La piste des étoiles ; Le grand final de Luna | Rollers, accélérateurs, plateformes mobiles, obstacles lumineux, notes à collecter |
+| Cookie Kingdom | La vallée Cookie Dough ; La rivière Choco Bons ; Le château des délices | Guimauves rebondissantes, tapis de caramel, plateformes mobiles, biscuits roulants, glaces à collecter |
+| December Dream | La tournée des cadeaux ; Le lac aux aurores ; Minuit, tous les deux | Sol glissant, boules de neige, plateformes mobiles et cadeaux à rapporter |
 
-Six thèmes instrumentaux originaux, synthétisés avec Web Audio : boule à musique, live, décembre, Noël, lettres et finale. Mélodie, basse, accords, timbres et tempo varient selon le lieu. Réverbération, compression douce, fondus et sons de réussite sont locaux. Le son commence uniquement après une action volontaire ; le bouton permet de le couper. La musique et le rendu s’arrêtent lorsque la page est masquée. Aucune voix personnelle n’est simulée.
+Les niveaux débloquent neuf textes et les photographies réellement accessibles dans le projet. La dernière victoire ouvre une déclaration finale. Les photos ne sont ni générées ni remplacées.
 
-## Sources et construction
+## Technique
 
-- `index.html` : interface, dialogues et contenu de secours.
-- `style.css` : présentation responsive et animations d’interface.
-- `src/world.js` : géométrie 3D, caméra, interactions tactiles et particules.
-- `src/audio.js` : partition et synthèse audio.
-- `src/main.js` : narration, jeux, progression, dialogues et accessibilité.
-- `app.js` : bundle déployé, comprenant Three.js 0.170.0. Il n’y a aucun CDN à charger.
-- `assets/IMG_*.jpeg` : six photos d’origine, non modifiées.
-- `vendor/THREE-LICENSE.txt` et les licences des polices dans `assets/` : mentions de licence.
-
-Pour reconstruire après modification des sources :
+Three.js 0.170.0, WebGL, modèle physique déterministe à 90 Hz, Pointer Events, Web Audio. Pas de CDN, de compte, de collecte de données ou de dépendance réseau pendant la partie. Le score musical original change avec le monde ; aucun enregistrement de Soy Luna ou de la vidéo n’est utilisé. Le mode léger limite la résolution de rendu. Les effets doux atténuent les transitions et les particules, sans modifier les règles du jeu.
 
 ```sh
 cd experience
 npm ci
+npm test
 npm run build
 ```
 
-Pour jouer, servir le dossier du dépôt avec un serveur HTTP statique et ouvrir `/experience/`. GitHub Pages sert directement les fichiers ; aucun build distant n’est nécessaire.
+`game.js` et `app.js` sont les bundles publiés, permettant une livraison statique directe par GitHub Pages. Les sources du nouveau jeu se trouvent dans `src/adventure/`. Les tests de parcours utilisent uniquement des commandes ordinaires de déplacement, de saut et de sprint. Ils n’altèrent pas les vies ou les conditions de victoire.
 
-## Adaptation téléphone
+La musique démarre après un geste, conformément aux restrictions des navigateurs mobiles. La partie se met en pause quand l’onglet est masqué. La perte du contexte WebGL affiche une proposition de rechargement ; les niveaux déjà gagnés restent sauvegardés.
 
-Rendu WebGL avec géométries statiques fusionnées, ombres statiques et densité de pixels plafonnée. Un mode léger réduit la résolution et les ombres. Une version sans WebGL conserve les jeux et les souvenirs si la 3D est indisponible. Les gestes complexes ont un bouton alternatif. Les notes sont aussi identifiées par couleur et numéro, et un indice reste accessible sans le son. Les dialogues utilisent l’élément natif `dialog`. Les animations décoratives sont réduites avec `prefers-reduced-motion`.
+## Direction artistique et provenance
 
-Voir `VALIDATION.md` pour le périmètre exact des vérifications et les limites des tests.
+Illustrations originales créées avec l’outil intégré de génération d’images à partir d’une planche de référence extraite de la vidéo fournie par l’utilisateur. Ce sont des illustrations, pas des photographies du couple. Les personnages et éléments jouables sont des modèles procéduraux du moteur 3D.
+
+- `assets/adventure-cover.webp` : couverture romantique montrant un couple devant un portail en cœur, trois mondes flottants, couleurs rose, crème, améthyste et or. Prompt : « Portrait cinematic 3D animated romantic adventure cover; warm brown-skinned couple, woman with long dark curly hair, man with short curly hair, pink heart portal, neon roller rink, cookie dough kingdom and snowy Christmas village. Reference animation style only, single coherent scene, no text or UI. »
+
+- `assets/world-roller.webp` : royaume de roller dans les nuages, discothèques, néons roses et turquoise. Prompt : « Portrait 3D animated fantasy neon roller kingdom over lavender clouds, curved tracks, disco balls, romantic pavilions, palms and star lanterns. Look down at 45 degrees. Rich perimeter, open atmospheric lower centre for gameplay, no text, no characters. »
+- `assets/world-sweet.webp` : montagnes de Cookie Dough, cascades de chocolat et château de gaufrettes. Prompt : « Portrait 3D animated cookie dough kingdom, giant vanilla ice cream mountains with chocolate chunks, wafer castle, caramel rivers, cookies, pink candy trees. Golden light, open peach-mist lower centre for gameplay, no text or characters. »
+- `assets/world-winter.webp` : village de Noël, neige, chalet et aurore. Prompt : « Portrait 3D animated enchanted snowy Christmas village at blue hour, golden chalet windows, teal snowy evergreens, candy canes and gift parcels, aurora and a frozen river. Open blue-mist lower centre for gameplay, no text or characters. »
+
+Les panoramas sont des illustrations de fond ; le personnage, les plateformes, les objets et les collisions sont rendus et animés en temps réel. Leurs formats WebP sont optimisés pour la livraison mobile.
+
+Les mentions Ben & Jerry’s Cookie Dough, Kinder Choco Bons et Soy Luna renvoient aux goûts demandés par l’utilisateur ; le cadeau n’est pas affilié à ces marques. Les étiquettes des accessoires 3D sont dessinées dans le code. Les licences des polices et de Three.js sont présentes dans le dépôt.
+
+Voir `VALIDATION.md` pour les vérifications et leurs limites.

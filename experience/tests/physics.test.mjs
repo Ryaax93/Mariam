@@ -1,0 +1,14 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {LEVELS} from '../src/adventure/levels.js';
+import {Session} from '../src/adventure/physics.js';
+import {controls} from './route-controller.mjs';
+const dt=1/90;
+for(const level of LEVELS)test(`Niveau ${level.id+1} : parcours intégral sans téléportation`,()=>{const s=new Session(level),memory={};let frames=0;while(s.status==='playing'&&frames++<18000)s.step(dt,controls(s,memory));assert.equal(s.status,'won');assert.equal(s.relics.size,3);assert.ok(s.hp>0);assert.ok(s.time>4);});
+test('Le saut est déclenché une fois, puis la gravité ramène au sol',()=>{const s=new Session(LEVELS[0]);s.step(dt,{});s.step(dt,{jump:true});assert.ok(s.player.vy>8);for(let i=0;i<150;i++)s.step(dt,{jump:true});assert.equal(s.player.ground,0);assert.equal(s.player.y,0);});
+test('Trois chutes entraînent une défaite et arrêtent la simulation',()=>{const s=new Session(LEVELS[0]);for(let i=0;i<3;i++){s.player.y=-7;s.step(dt,{});}assert.equal(s.hp,0);assert.equal(s.status,'lost');const t=s.time;s.step(dt,{x:1});assert.equal(s.time,t);});
+test('Un point de reprise conserve les objets déjà récupérés',()=>{const s=new Session(LEVELS[0]);s.checkpoint=2;s.relics.add(0);s.player.y=-7;s.step(dt,{});assert.equal(s.hp,2);assert.equal(s.player.x,s.platforms[2].x);assert.equal(s.relics.size,1);});
+test('Le portail ne gagne pas la partie sans les trois objets',()=>{const s=new Session(LEVELS[0]),g=s.level.goal,b=s.platforms[g.platform];Object.assign(s.player,{x:b.x+g.x,z:b.z+g.z,y:b.y+.01,vy:0});s.step(dt,{});assert.equal(s.status,'playing');s.relics=new Set([0,1,2]);s.step(dt,{});assert.equal(s.status,'won');});
+test('Le sprint est limité par son temps de recharge',()=>{const s=new Session(LEVELS[0]);s.step(dt,{z:-1,dash:true});assert.ok(s.cooldown>1.5);s.step(dt,{z:-1,dash:false});const cooldown=s.cooldown;s.step(dt,{z:-1,dash:true});assert.ok(s.cooldown<cooldown);});
+test('Les guimauves ne rebondissent que sur leur coussin visible',()=>{const s=new Session(LEVELS[3]),b=s.platforms[1];Object.assign(s.player,{x:b.x+1.6,z:b.z,y:b.y+.01,vy:0});s.step(dt,{});assert.equal(s.player.ground,1);Object.assign(s.player,{x:b.x,z:b.z,y:b.y+.01,vy:0});s.step(dt,{});assert.ok(s.player.vy>13);assert.equal(s.player.ground,-1);});
+test('Les plateformes mobiles transportent le personnage',()=>{const s=new Session(LEVELS[1]),idx=s.platforms.findIndex(p=>p.kind==='moving'),b=s.platforms[idx];Object.assign(s.player,{x:b.x,z:b.z+1,y:b.y,ground:idx});const old=s.player.x;s.step(dt,{});assert.notEqual(s.player.x,old);assert.equal(s.player.ground,idx);});

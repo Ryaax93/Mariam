@@ -1,88 +1,46 @@
-# Validation du jeu — Le monde que tu as allumé
+# Validation — Les mondes de nous
 
-19 octobre 2026. Cette validation concerne le nouveau jeu 3D, qui remplace l’expérience précédente.
+Contrôles réalisés le 19 octobre 2026.
 
-## Périmètre
+## Campagne complète
 
-Parcours complet exécuté dans Chromium 140 avec Playwright, sur un vrai rendu WebGL (rendu logiciel dans le conteneur), avec viewport 393 × 852, densité 2 et événements tactiles. Les glissements de rotation, du premier message, de la buée et du baiser utilisent de véritables événements tactiles injectés dans le navigateur.
+Les neuf niveaux ont été terminés dans Chromium 140, à **393 × 852**, avec simulation tactile mobile et rendu WebGL réel (SwiftShader dans l’environnement de test). Le contrôleur d’essai utilise les entrées ordinaires du jeu : joystick, saut et sprint. Il ne modifie ni les positions, ni les vies, ni les objets, ni la condition de victoire.
 
-55 vérifications fonctionnelles réussies. Six vérifications complémentaires après ajustement de la finale et des cadrages. Aucune erreur JavaScript ni requête de ressource en échec dans le parcours complet.
+Chaque niveau a récupéré ses trois objets, rejoint son portail et enregistré son résultat. Les neuf victoires ont été retrouvées après rechargement. Aucune erreur JavaScript n’a été relevée durant cette campagne.
 
-Captures réellement inspectées : ouverture, village, quatre souvenirs, cadeaux, photos, lettres, carnet et finale. Formats contrôlés : 320 × 568, 393 × 852, 430 × 932, 852 × 393 et 1440 × 900. Les images originales restent inchangées ; le recadrage des captures de souvenirs est uniquement visuel en CSS.
+## Commandes, interface et son
 
-## Vérifications fonctionnelles
+**33 contrôles de navigateur réussis**, couvrant :
 
-- Réussi : WebGL world actually renders.
-- Réussi : Original music does not autoplay.
-- Réussi : All local fonts load.
-- Réussi : Start enters village.
-- Réussi : Audio context runs after voluntary start.
-- Réussi : Score produces live oscillator nodes.
-- Réussi : Audio output contains a real signal.
-- Réussi : Touch drag rotates the actual world.
-- Réussi : Future chapter stays locked.
-- Réussi : Hidden photo 0 opens.
-- Réussi : Hidden photo 0 loads.
-- Réussi : Hidden photo 1 opens.
-- Réussi : Hidden photo 1 loads.
-- Réussi : Hidden photo 2 opens.
-- Réussi : Hidden photo 2 loads.
-- Réussi : Three treasures saved.
-- Réussi : Live music theme.
-- Réussi : Wrong comment gives a playful hint.
-- Réussi : Touch drag sends message and unlocks light.
-- Réussi : December intimate music theme.
-- Réussi : Real touch erases fog.
-- Réussi : Two lights meet and second memory completes.
-- Réussi : Christmas music theme.
-- Réussi : Wrong note can retry.
-- Réussi : Melody hint is visual.
-- Réussi : Christmas real photo 0 opens.
-- Réussi : Christmas real photo 1 opens.
-- Réussi : Third gift contains cuddle voucher.
-- Réussi : Christmas chapter completes.
-- Réussi : Letters music theme.
-- Réussi : Letter 0 opens.
-- Réussi : Letter 1 opens.
-- Réussi : Letter 2 opens.
-- Réussi : Wrong word has recoverable hint.
-- Réussi : All four memories completed.
-- Réussi : Finale scene and theme.
-- Réussi : Final declaration opens.
-- Réussi : Audio off actually suspends.
-- Réussi : Music resumes.
-- Réussi : Manual light mode works.
-- Réussi : Journal lists completed places.
-- Réussi : Original stars link preserved.
-- Réussi : Progress persists on reload.
-- Réussi : Reload still does not autoplay.
-- Réussi : Accessible fog alternative works.
-- Réussi : small viewport has no horizontal overflow.
-- Réussi : large viewport has no horizontal overflow.
-- Réussi : desktop viewport has no horizontal overflow.
-- Réussi : landscape viewport has no horizontal overflow.
-- Réussi : Replay cancellation keeps progress.
-- Réussi : Confirmed replay resets progress.
-- Réussi : No JavaScript or console errors.
-- Réussi : No failed asset requests.
-- Réussi : No-WebGL accessible fallback starts.
-- Réussi : Fallback and reduced motion remain fully playable.
+- déverrouillage des niveaux ;
+- déplacement et saut avec deux contacts tactiles simultanés ;
+- relâchement des commandes sans bouton bloqué ;
+- clavier et pause avec Échap ;
+- arrêt de la physique et du chronomètre pendant la pause ;
+- défaite après trois chutes, reprise et réinitialisation du niveau ;
+- démarrage audio après un geste, signal audio mesuré avec un AnalyserNode, coupure et reprise ;
+- modes léger et effets doux ;
+- carnet, neuf souvenirs débloqués et vraie photographie de la voiture ;
+- boutons de départ et commandes accessibles, sans débordement horizontal, en **320 × 568**, **430 × 932**, **852 × 393** et **1440 × 900** ;
+- absence d’accumulation des géométries et textures lors de trois reprises successives du même niveau ;
+- absence d’erreurs JavaScript et de ressources manquantes.
 
-## Derniers ajustements
+Des captures de l’accueil, de la carte, des trois univers, des instructions, des résultats, du carnet et de la lettre finale ont été contrôlées visuellement. Les panoramas et accessoires restent distincts des plateformes jouables.
 
-- Réussi : Constellation reaches its complete shape on real elapsed time.
-- Réussi : small-intro start buttons remain inside screen.
-- Réussi : large-intro start buttons remain inside screen.
-- Réussi : desktop-intro start buttons remain inside screen.
-- Réussi : Reduced motion disables idle rotation.
-- Réussi : Final visual check has no JS errors.
+Sept contrôles complémentaires ont validé les panoramas et les thèmes musicaux des trois mondes, la relecture de la lettre finale depuis la carte, la pause automatique lors de la perte du focus, le message sans WebGL et le signalement d’un stockage local bloqué.
 
-La finale utilise le temps écoulé réel : les étoiles terminent leur formation même lorsque le rendu est lent. La position et la luminosité du prénom ont été contrôlées visuellement. Le mode paysage et le petit format ont reçu des ajustements de composition.
+## Modèle physique
 
-Le test audio confirme un AudioContext actif après consentement, des oscillateurs actifs et un signal effectivement mesuré en sortie. Il vérifie également le changement de thème et l’arrêt/reprise du contexte audio. Les thèmes sont des compositions synthétisées localement, sans samples distants.
+**16 tests automatisés réussis**, reproductibles avec `npm test` : neuf parcours complets, gravité et saut sans répétition involontaire, défaite, conservation des objets au point de reprise, portail verrouillé sans collecte, recharge du sprint, zone précise des guimauves et transport par les plateformes mobiles.
 
-## Préservation et limites
+Les essais ont conduit à restreindre le rebond à la guimauve visible et à ajuster son impulsion. Les niveaux avancés combinent davantage d’îles et de mécanismes. Les sauts disposent d’une courte tolérance de bord et d’un tampon d’entrée.
 
-Toutes les modifications restent dans `/experience/`. L’identifiant Git du fichier original `/index.html` reste `843ea7b2fbc108db40ddbecb384cadfdb2ae547f`.
+## Préservation
 
-Ces contrôles émulent des dimensions et gestes de téléphone ; ils ne constituent pas un essai sur un iPhone physique, ni une certification de fluidité Safari iOS. La vitesse du rendu logiciel de cet environnement ne permet pas de conclure sur les FPS d’un appareil réel. Le jeu prévoit un mode léger et un parcours de secours sans WebGL.
+Le fichier original `index.html` à la racine conserve le blob Git `843ea7b2fbc108db40ddbecb384cadfdb2ae547f`. Tous les ajouts et modifications sont dans `experience/`. Le précédent `experience/index.html` est conservé, octet pour octet, dans `experience/story.html`. Son bundle, ses styles, ses photographies et ses sources sont inchangés.
+
+## Limites du contrôle
+
+Il s’agit de tests de navigateur à des dimensions d’iPhone avec entrées tactiles simulées. **Aucun iPhone physique ni Safari iOS réel n’était disponible** : ces essais ne constituent donc pas une mesure de fluidité sur un appareil Apple. Le moteur utilise les API web standard, limite la densité de pixels et propose un mode léger. Un essai sur l’iPhone de destination reste la bonne vérification matérielle.
+
+La publication GitHub Pages doit être contrôlée séparément par comparaison SHA-256 des fichiers servis en HTTPS avec les fichiers testés, puis inspection du rendu de ces mêmes octets. Le déploiement ne requiert aucun changement au site original.

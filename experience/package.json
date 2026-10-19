@@ -1,13 +1,17 @@
 {
-  "name": "mariam-little-world",
-  "version": "1.0.0",
+  "name": "mariam-worlds",
+  "version": "2.0.0",
   "private": true,
-  "description": "Un monde miniature interactif pour Mariam",
+  "description": "Les mondes de nous : neuf niveaux 3D et un monde de souvenirs pour Mariam",
   "scripts": {
-    "build": "esbuild src/main.js --bundle --format=iife --minify --target=es2020 --outfile=app.js"
+    "build": "npm run build:story && npm run build:game",
+    "build:story": "esbuild src/main.js --bundle --format=iife --minify --target=es2020 --outfile=app.js",
+    "build:game": "esbuild src/adventure/main.js --bundle --format=iife --minify --target=es2020 --outfile=game.js",
+    "test": "node --test tests/*.test.mjs"
   },
   "devDependencies": {
     "esbuild": "0.25.0",
     "three": "0.170.0"
-  }
+  },
+  "type": "module"
 }
