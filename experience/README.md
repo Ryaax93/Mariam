@@ -1,35 +1,49 @@
-# Pour Mariam — Notre petit infini
+# Mariam — Le monde que tu as allumé
 
-Expérience romantique, mobile d’abord, publiée sous `/Mariam/experience/`.
-Le fichier `/index.html` et son ciel d’étoiles restent inchangés.
+Un jeu romantique pour téléphone, publié dans `/Mariam/experience/`.
+La page originale à la racine et son ciel d’étoiles sont conservés intégralement.
 
-## Parcours
+## Le jeu
 
-1. Ouverture : décor nocturne, particules, profondeur et entrée animée.
-2. Rencontre pendant le live TikTok : un commentaire puis le premier message.
-3. Décembre : la vraie photo de la voiture, sous une buée effaçable au doigt.
-4. Premier Noël : photos des cadeaux, guirlande lumineuse et neige.
-5. Petites attentions : trois souvenirs photographiques à ouvrir.
-6. Trois enveloppes, une séquence finale au défilement et une dernière déclaration.
+Une boule à neige en véritable 3D contient un village miniature : chalets, voiture, sapin, boîte aux lettres, personnage, luciole, neige et guirlandes. Le village tourne au doigt ; un toucher sur le sol déplace le petit personnage. Chaque souvenir terminé rallume des fenêtres et des lumières.
 
-Les dates précises, dialogues historiques mot pour mot et détails non fournis ne sont pas inventés. La carte du live est identifiée comme une remise en scène. Les lettres sont de nouveaux textes rédigés pour ce cadeau.
+1. Retrouver le commentaire de Mariam, puis glisser une lumière vers l’enveloppe du premier message.
+2. Effacer la buée au doigt sur la vraie photo de la voiture, puis rapprocher les deux lumières.
+3. Reproduire une séquence musicale et visuelle de quatre notes, puis ouvrir trois cadeaux.
+4. Ouvrir trois lettres et remettre une phrase dans l’ordre.
+5. Finale : les lumières s’assemblent en « MARIAM », puis ouvrent la déclaration.
 
-## Modification
+Trois souvenirs photographiques supplémentaires sont cachés près du bonhomme de neige, du banc et du petit trésor. Le carnet permet de revoir les chapitres débloqués. La progression reste sur l’appareil via `localStorage` ; on peut recommencer après une confirmation. Aucun compte, serveur applicatif, cookie de suivi ou service tiers n’est requis.
 
-- `index.html` : contenu des chapitres et structure accessible.
-- `style.css` : direction artistique, responsive, animations CSS, réduction des mouvements.
-- `app.js` : textes des lettres et souvenirs, interactions, particules, composition musicale locale.
-- `assets/IMG_*.jpeg` : six images personnelles fournies et conservées sans modification de leurs pixels. Le cadrage est effectué uniquement à l’affichage en CSS.
-- `assets/night-garden.webp` : décor fantastique généré ; ne représente aucun souvenir ou lieu personnel réel.
+Les six photos sont celles fournies par l’utilisateur ; aucun portrait ni souvenir photographique n’est généré. Le village est une interprétation fantastique, pas une reconstitution d’un lieu réel. Les commentaires sont explicitement remis en scène et les lettres sont des textes créés pour ce cadeau.
 
-Aucun build, CDN, compte, suivi, cookie ou bibliothèque JavaScript distante. Polices locales Cormorant Garamond et Manrope, licences OFL incluses. Le son est une composition instrumentale synthétisée localement, activée uniquement par une action volontaire. Aucune autorisation de microphone, de caméra ou de mouvement n’est demandée.
+## Musique
 
-Le défilement est natif. Les modales utilisent `<dialog>`, la buée utilise Pointer Events et un canvas. Les particules sont plafonnées et leur résolution est limitée ; les animations et l’audio sont suspendus quand la page est masquée. `prefers-reduced-motion` supprime les déplacements et rend la finale directement lisible. Un bouton remplace le geste d’effacement pour l’accès au clavier.
+Six thèmes instrumentaux originaux, synthétisés avec Web Audio : boule à musique, live, décembre, Noël, lettres et finale. Mélodie, basse, accords, timbres et tempo varient selon le lieu. Réverbération, compression douce, fondus et sons de réussite sont locaux. Le son commence uniquement après une action volontaire ; le bouton permet de le couper. La musique et le rendu s’arrêtent lorsque la page est masquée. Aucune voix personnelle n’est simulée.
 
-## Décor généré
+## Sources et construction
 
-Outil : Imagegen intégré. Asset de projet : `experience/assets/night-garden.webp`, conversion compressée de l’image générée, sans altération de photos personnelles.
+- `index.html` : interface, dialogues et contenu de secours.
+- `style.css` : présentation responsive et animations d’interface.
+- `src/world.js` : géométrie 3D, caméra, interactions tactiles et particules.
+- `src/audio.js` : partition et synthèse audio.
+- `src/main.js` : narration, jeux, progression, dialogues et accessibilité.
+- `app.js` : bundle déployé, comprenant Three.js 0.170.0. Il n’y a aucun CDN à charger.
+- `assets/IMG_*.jpeg` : six photos d’origine, non modifiées.
+- `vendor/THREE-LICENSE.txt` et les licences des polices dans `assets/` : mentions de licence.
 
-Prompt utilisé :
+Pour reconstruire après modification des sources :
 
-> Use case: stylized-concept. Asset type: full-bleed atmospheric background for a beautifully art-directed romantic cinematic website, no typography. Create a sophisticated magical-realism film still in a tall portrait 2:3 composition, painterly cinematic realism with fine film grain. A vast midnight plum and charcoal blue sky above a still black mirror lake; tiny scattered stars, wisps of dusky pink clouds, a delicate warm ivory crescent moon in upper right. At the lake horizon in the LOWER THIRD, an elegant very tall thin oval doorway of warm champagne golden light stands on a distant little stone causeway, reflected in water, with a few very small floating golden lights leading toward it. Dark barely visible pine-covered hills frame lower left and right, intricate mist. Restrained dusky gold / dusty rose / ink plum color grading, subtle volumetric haze and immense atmospheric depth. The CENTER and upper 2/3 are primarily dark richly textured negative space to put large ivory French editorial typography OVER the image later, no bright nebula behind center text. Foreground lower edge dark vignette, high production value of a romantic fantasy film opening. No people, no silhouettes of people, no faces, no hearts, no text, no letters, no watermark, no borders. This is a dreamlike illustrated atmosphere, not a depiction of any real personal memory.
+```sh
+cd experience
+npm ci
+npm run build
+```
+
+Pour jouer, servir le dossier du dépôt avec un serveur HTTP statique et ouvrir `/experience/`. GitHub Pages sert directement les fichiers ; aucun build distant n’est nécessaire.
+
+## Adaptation téléphone
+
+Rendu WebGL avec géométries statiques fusionnées, ombres statiques et densité de pixels plafonnée. Un mode léger réduit la résolution et les ombres. Une version sans WebGL conserve les jeux et les souvenirs si la 3D est indisponible. Les gestes complexes ont un bouton alternatif. Les notes sont aussi identifiées par couleur et numéro, et un indice reste accessible sans le son. Les dialogues utilisent l’élément natif `dialog`. Les animations décoratives sont réduites avec `prefers-reduced-motion`.
+
+Voir `VALIDATION.md` pour le périmètre exact des vérifications et les limites des tests.

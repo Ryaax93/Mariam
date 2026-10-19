@@ -1,0 +1,13 @@
+{
+  "name": "mariam-little-world",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Un monde miniature interactif pour Mariam",
+  "scripts": {
+    "build": "esbuild src/main.js --bundle --format=iife --minify --target=es2020 --outfile=app.js"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.0",
+    "three": "0.170.0"
+  }
+}
