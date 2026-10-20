@@ -1,0 +1,206 @@
+{
+  "base": "fa608ce5e925f7d5f66582f2025a262656661c16",
+  "files": [
+    {
+      "path": "experience/.gitignore",
+      "bytes": 14,
+      "sha256": "4d56952b0fb13bf8f9b6c13a6d4c34a075bac3af447636a1df4335d7576e2f97"
+    },
+    {
+      "path": "experience/README.md",
+      "bytes": 5543,
+      "sha256": "6080e9b21d40dc90858e9f4955e78fd60539423ab971b19d5f46b36f159ee5c9"
+    },
+    {
+      "path": "experience/VALIDATION.md",
+      "bytes": 3795,
+      "sha256": "abc9b2f179a8972afc2b1d6132cbeb2d4ecfa5b2e70040683256559a14e09761"
+    },
+    {
+      "path": "experience/app.js",
+      "bytes": 585586,
+      "sha256": "01fa4dcebb8dacb9aa70b23e1be7bb21dc2eb9c409daa86d4c4975efc8ece911"
+    },
+    {
+      "path": "experience/assets/IMG_5794.jpeg",
+      "bytes": 208507,
+      "sha256": "9ea0d1cb2766d20c2c7722db458b3c54a817b5b87b31a2157ee28a4f12c337ae"
+    },
+    {
+      "path": "experience/assets/IMG_5796.jpeg",
+      "bytes": 151582,
+      "sha256": "c75b17720695208569d87544573b5141b95324c0f061670c780244eb30dfe15c"
+    },
+    {
+      "path": "experience/assets/IMG_5797.jpeg",
+      "bytes": 229128,
+      "sha256": "0b7447245970baf8d5a46786bef8cce6958136b70e9618d7dba46b9229d97832"
+    },
+    {
+      "path": "experience/assets/IMG_5798.jpeg",
+      "bytes": 183104,
+      "sha256": "e58ec6abc1a697926d3be8bf3dbd6794f4d6dfbc6ceff9f8debd7b0ebfa52dd4"
+    },
+    {
+      "path": "experience/assets/IMG_5799.jpeg",
+      "bytes": 239375,
+      "sha256": "98d6494d566a93d7436ff3cef5a61c2ef1f08359210dad56cb2dc5c1026ce35c"
+    },
+    {
+      "path": "experience/assets/IMG_5800.jpeg",
+      "bytes": 211094,
+      "sha256": "8f885408e3130a77c80de76a1433cc35c01c385588d3b7d12de09d1757670008"
+    },
+    {
+      "path": "experience/assets/OFL-CormorantGaramond.txt",
+      "bytes": 4387,
+      "sha256": "60700d351cac4650c51f3f9db318d2a420f8b45052dba2715eb5fec41f0f6956"
+    },
+    {
+      "path": "experience/assets/OFL-Manrope.txt",
+      "bytes": 4387,
+      "sha256": "58172e0c0fac2cda8a37b348164bb55e44b0e69051e557e92b1d3f6910141f7b"
+    },
+    {
+      "path": "experience/assets/adventure-cover.webp",
+      "bytes": 353054,
+      "sha256": "0e837b8103f51d7b0c5ad5fb433ae0f13b7da9d066ba3d212abcf2a5193be577"
+    },
+    {
+      "path": "experience/assets/cormorant-italic.woff",
+      "bytes": 96524,
+      "sha256": "cb3e2dea3736b82d9ce1216cdacd525c69c94bb960adce125be5676cd72ef4df"
+    },
+    {
+      "path": "experience/assets/cormorant-regular.woff",
+      "bytes": 93308,
+      "sha256": "662c136511052c873a0f78b6adaf75e9f9cb51877c2dceebeb13bfe3b7c1db03"
+    },
+    {
+      "path": "experience/assets/heart.svg",
+      "bytes": 245,
+      "sha256": "014f6ebd1b57c734b8ee2ec81842ca40357c8d18dc9e6774eed02ddf08cb0daf"
+    },
+    {
+      "path": "experience/assets/manrope.woff",
+      "bytes": 41368,
+      "sha256": "955fed9a0c56113b6cfd0fbb274841b98883b0ff6701e63916c1b602f74381af"
+    },
+    {
+      "path": "experience/assets/night-garden.webp",
+      "bytes": 126294,
+      "sha256": "7ea2677a7375ad9337af7b6a33c552c27b253d50908941ff65dc7bd9734888d6"
+    },
+    {
+      "path": "experience/assets/world-roller.webp",
+      "bytes": 199102,
+      "sha256": "da5c7cf238f6acdee00cfe875d97518aba6554bfba1941a07651a6393b87cfdd"
+    },
+    {
+      "path": "experience/assets/world-sweet.webp",
+      "bytes": 216260,
+      "sha256": "683627a2798015719a53e438cbf0eb5fcb16ee04d5e184dbc118a73a0bd9b6ea"
+    },
+    {
+      "path": "experience/assets/world-winter.webp",
+      "bytes": 207494,
+      "sha256": "e7c4fca5c018dda6fbe36736d213057318a2836920ff20bd96a710bd53822e4e"
+    },
+    {
+      "path": "experience/game.css",
+      "bytes": 24475,
+      "sha256": "4ecea1037528c63977dfffe715affa481836f495355c43542bdf077e1183ea09"
+    },
+    {
+      "path": "experience/game.js",
+      "bytes": 554624,
+      "sha256": "451e3ac3aec640525b4f8dc3743b416f32e6013181d7b29a82ffa59663850088"
+    },
+    {
+      "path": "experience/index.html",
+      "bytes": 10670,
+      "sha256": "bd76489ba9e0ab9640cd33e0e2e55f62af2ac04951de5bd44b7c95d9ea2b0a5a"
+    },
+    {
+      "path": "experience/package-lock.json",
+      "bytes": 14239,
+      "sha256": "35f06e829a6467431e4b28d27d22a01b320481686740623401aa47123a643f96"
+    },
+    {
+      "path": "experience/package.json",
+      "bytes": 606,
+      "sha256": "ca8b1ef898cfc9688fe4df3a432e54f630bf4ca17291c2a845f68fa255abaa25"
+    },
+    {
+      "path": "experience/src/adventure/levels.js",
+      "bytes": 6792,
+      "sha256": "1907a8f286f367999a78018442321bf88d316a4e972a6ecae523a724218c1fa8"
+    },
+    {
+      "path": "experience/src/adventure/main.js",
+      "bytes": 17022,
+      "sha256": "309ccad0c699a82e6d66900fe1c4fb01bb9981ce47f3aaff3689bd2ec2c7feaa"
+    },
+    {
+      "path": "experience/src/adventure/physics.js",
+      "bytes": 4221,
+      "sha256": "c12e408cb7ebe16a9354de5a3c2ba7535b194b8c007a154dc5052972d2d3f68c"
+    },
+    {
+      "path": "experience/src/adventure/render.js",
+      "bytes": 24891,
+      "sha256": "6ba8731ba5d78ce8ef15a08e7c4e422a2e9d99392076f952eac36a64af8ef2c8"
+    },
+    {
+      "path": "experience/src/adventure/sound.js",
+      "bytes": 2624,
+      "sha256": "73943fba375ca05a68b6abc7550d3f2fe51d385e2ec83bb0c2b53991d4e18a72"
+    },
+    {
+      "path": "experience/src/audio.js",
+      "bytes": 5183,
+      "sha256": "1bd84e232a9472f694051fe120f4ac6e07903ada49b5cf3716484959efc5701d"
+    },
+    {
+      "path": "experience/src/main.js",
+      "bytes": 31282,
+      "sha256": "27f9d6c368404bfb6a6f98e27f355189496df9f93f2d07041ea6a36fd21d3fbe"
+    },
+    {
+      "path": "experience/src/world.js",
+      "bytes": 25080,
+      "sha256": "7ca98ea733a912bb11a5f4605bb4646818412f50b888dcf953333684300fe9ec"
+    },
+    {
+      "path": "experience/story.html",
+      "bytes": 6418,
+      "sha256": "fabd27accd45b0905cf3c80d8229b5afe8f8d5544a96ac42869a2e5615139b6e"
+    },
+    {
+      "path": "experience/style.css",
+      "bytes": 25707,
+      "sha256": "8cbf2ff8f5d2ee946afc0f8a832ec3d08ec5929fc9cea9af2303158c5e6f7c6d"
+    },
+    {
+      "path": "experience/tests/physics.test.mjs",
+      "bytes": 2631,
+      "sha256": "4d5dd9d10e6917196867d897c048ae430123ca25d2a6f607746db4000daf30ae"
+    },
+    {
+      "path": "experience/tests/route-controller.mjs",
+      "bytes": 1720,
+      "sha256": "41090a5b6424a81cf7f0b67112637eac0d826bb85493dcc8ae6e5d0ad780812f"
+    },
+    {
+      "path": "experience/vendor/THREE-LICENSE.txt",
+      "bytes": 1081,
+      "sha256": "4c40a1ef62450b857c3b2aaf294936304cd552d965fbcd9d32d4c5bcf4ba4454"
+    },
+    {
+      "path": "index.html",
+      "bytes": 29089,
+      "sha256": "4fc7f9fa2925749fe786bb7eea282c0e6325a94295b0f131b601aa53d545003b"
+    }
+  ],
+  "bytes": 3948506
+}

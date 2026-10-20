@@ -1,0 +1,225 @@
+{
+  "environment": {
+    "browser": "Chromium 140",
+    "gpu": "SwiftShader software",
+    "physicalIPhone": false
+  },
+  "checks": [
+    {
+      "name": "Plateforme mobile transporte Mariam en navigateur",
+      "pass": true,
+      "evidence": {
+        "before": {
+          "x": -1.4072571695857865,
+          "y": 0,
+          "z": -19.946406521460922,
+          "vx": -0.0006403949016577369,
+          "vy": 0,
+          "vz": -0.007741133346045679,
+          "ground": 3,
+          "facing": 0.7853981633974483
+        },
+        "after": {
+          "x": -1.645323821112822,
+          "y": 0,
+          "z": -19.946876325022743,
+          "vx": -0.00000602199351539714,
+          "vy": 0,
+          "vz": -0.00007279423163900581,
+          "ground": 3,
+          "facing": 0.7853981633974483
+        }
+      }
+    },
+    {
+      "name": "Pause immobilise aussi les plateformes mobiles",
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "name": "Une chute revient au checkpoint et conserve les objets",
+      "pass": true,
+      "evidence": {
+        "checkpoint": 2,
+        "relicsBefore": [
+          0,
+          1
+        ],
+        "relicsAfter": [
+          0,
+          1
+        ],
+        "respawn": {
+          "x": -1.5,
+          "y": 0.2,
+          "z": -11.8,
+          "vx": 0,
+          "vy": 0,
+          "vz": 0,
+          "ground": 2,
+          "facing": 1.5707963267948966
+        }
+      }
+    },
+    {
+      "name": "Les records déjà terminés survivent au rechargement",
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "name": "Annulation tactile libère le joystick",
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "name": "Sauvegarde du monde de souvenirs préservée",
+      "pass": true,
+      "evidence": {}
+    }
+  ],
+  "errors": [],
+  "performance": [
+    {
+      "level": 0,
+      "normal": {
+        "wallSeconds": 3.6236000000001396,
+        "simSeconds": 1.2222222222222183,
+        "fps": 7.246796915763233,
+        "p95ms": 249.90000000000055,
+        "over50ms": 21,
+        "calls": 117,
+        "triangles": 108952,
+        "geometries": 63,
+        "textures": 5,
+        "low": false,
+        "canvas": [
+          628,
+          1363
+        ]
+      },
+      "low": {
+        "wallSeconds": 3.5317000000001864,
+        "simSeconds": 2.2999999999999927,
+        "fps": 13.68985203308866,
+        "p95ms": 133.20000000000073,
+        "over50ms": 40,
+        "calls": 117,
+        "triangles": 108952,
+        "geometries": 63,
+        "textures": 5,
+        "low": true,
+        "canvas": [
+          393,
+          852
+        ]
+      }
+    },
+    {
+      "level": 3,
+      "normal": {
+        "wallSeconds": 3.5871000000001403,
+        "simSeconds": 1.4444444444444398,
+        "fps": 7.98061007330338,
+        "p95ms": 133.40000000000146,
+        "over50ms": 27,
+        "calls": 127,
+        "triangles": 156422,
+        "geometries": 73,
+        "textures": 15,
+        "low": false,
+        "canvas": [
+          628,
+          1363
+        ]
+      },
+      "low": {
+        "wallSeconds": 3.5750000000001854,
+        "simSeconds": 1.9444444444444378,
+        "fps": 11.23196973279735,
+        "p95ms": 166.70000000000073,
+        "over50ms": 36,
+        "calls": 127,
+        "triangles": 156422,
+        "geometries": 73,
+        "textures": 15,
+        "low": true,
+        "canvas": [
+          393,
+          852
+        ]
+      }
+    },
+    {
+      "level": 6,
+      "normal": {
+        "wallSeconds": 3.6309000000001834,
+        "simSeconds": 1.2666666666666624,
+        "fps": 8.077311409202373,
+        "p95ms": 233.29999999999927,
+        "over50ms": 21,
+        "calls": 101,
+        "triangles": 87558,
+        "geometries": 59,
+        "textures": 3,
+        "low": false,
+        "canvas": [
+          628,
+          1363
+        ]
+      },
+      "low": {
+        "wallSeconds": 3.5677000000001424,
+        "simSeconds": 1.9444444444444378,
+        "fps": 11.045105824054444,
+        "p95ms": 166.59999999999854,
+        "over50ms": 36,
+        "calls": 101,
+        "triangles": 87558,
+        "geometries": 59,
+        "textures": 3,
+        "low": true,
+        "canvas": [
+          393,
+          852
+        ]
+      }
+    }
+  ],
+  "observations": [
+    {
+      "name": "Recharge après checkpoint",
+      "before": {
+        "checkpoint": 2,
+        "relics": [
+          0,
+          1
+        ]
+      },
+      "after": {
+        "checkpoint": 0,
+        "relics": []
+      },
+      "completedRecords": 9
+    },
+    {
+      "name": "Résultat tardif après victoire puis reprise immédiate",
+      "mode": "result",
+      "status": "playing",
+      "relics": [],
+      "time": 0.044444444444444446
+    },
+    {
+      "name": "Position derrière le premier sapin",
+      "player": {
+        "x": 3.6171925012349364,
+        "y": 0,
+        "z": -3.269997703856174,
+        "vx": 0.698722708479984,
+        "vy": 0,
+        "vz": -0.000037478663297569115,
+        "ground": 0,
+        "facing": 1.5707963267948966
+      }
+    }
+  ]
+}

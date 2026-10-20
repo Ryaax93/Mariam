@@ -1,0 +1,171 @@
+{
+  "method": "isolated model tests; positions initialized directly, not browser play",
+  "observations": [
+    {
+      "case": "Appui au-delà du bord visible",
+      "platformEdge": 3.5,
+      "x": 3.59,
+      "ground": 0
+    },
+    {
+      "case": "Chute pendant invulnérabilité après choc",
+      "afterHit": 2,
+      "afterFall": 1,
+      "invulnerable": 2.5
+    },
+    {
+      "case": "Collision latérale sous une plateforme surélevée",
+      "surfaceY": 0.8,
+      "player": {
+        "x": 0,
+        "y": -0.07148148148148152,
+        "z": -12.106370842812835,
+        "vx": 0,
+        "vy": -3.066666666666667,
+        "vz": -6.073640286188428,
+        "ground": -1,
+        "facing": 3.141592653589793
+      },
+      "insideXZ": true
+    },
+    {
+      "case": "Portail sans reliques",
+      "status": "playing"
+    }
+  ],
+  "metrics": [
+    {
+      "id": 0,
+      "name": "Premiers tours de piste",
+      "islands": 6,
+      "length": 33,
+      "hazards": 1,
+      "coins": 15,
+      "checkpoint": 2,
+      "types": [
+        "normal"
+      ],
+      "parUnused": 65
+    },
+    {
+      "id": 1,
+      "name": "La piste des étoiles",
+      "islands": 10,
+      "length": 62,
+      "hazards": 4,
+      "coins": 27,
+      "checkpoint": 4,
+      "types": [
+        "normal",
+        "boost",
+        "moving"
+      ],
+      "parUnused": 80
+    },
+    {
+      "id": 2,
+      "name": "Le grand final de Luna",
+      "islands": 13,
+      "length": 84,
+      "hazards": 11,
+      "coins": 36,
+      "checkpoint": 6,
+      "types": [
+        "normal",
+        "boost",
+        "moving"
+      ],
+      "parUnused": 95
+    },
+    {
+      "id": 3,
+      "name": "La vallée Cookie Dough",
+      "islands": 6,
+      "length": 36,
+      "hazards": 2,
+      "coins": 15,
+      "checkpoint": 2,
+      "types": [
+        "normal",
+        "bounce"
+      ],
+      "parUnused": 65
+    },
+    {
+      "id": 4,
+      "name": "La rivière Choco Bons",
+      "islands": 10,
+      "length": 64,
+      "hazards": 4,
+      "coins": 27,
+      "checkpoint": 4,
+      "types": [
+        "normal",
+        "moving",
+        "conveyor",
+        "bounce"
+      ],
+      "parUnused": 80
+    },
+    {
+      "id": 5,
+      "name": "Le château des délices",
+      "islands": 13,
+      "length": 86,
+      "hazards": 11,
+      "coins": 36,
+      "checkpoint": 6,
+      "types": [
+        "normal",
+        "bounce",
+        "moving",
+        "conveyor"
+      ],
+      "parUnused": 95
+    },
+    {
+      "id": 6,
+      "name": "La tournée des cadeaux",
+      "islands": 6,
+      "length": 35,
+      "hazards": 2,
+      "coins": 15,
+      "checkpoint": 2,
+      "types": [
+        "normal",
+        "ice"
+      ],
+      "parUnused": 65
+    },
+    {
+      "id": 7,
+      "name": "Le lac aux aurores",
+      "islands": 10,
+      "length": 63,
+      "hazards": 4,
+      "coins": 27,
+      "checkpoint": 4,
+      "types": [
+        "normal",
+        "ice",
+        "moving"
+      ],
+      "parUnused": 80
+    },
+    {
+      "id": 8,
+      "name": "Minuit, tous les deux",
+      "islands": 13,
+      "length": 84,
+      "hazards": 11,
+      "coins": 36,
+      "checkpoint": 6,
+      "types": [
+        "normal",
+        "ice",
+        "moving"
+      ],
+      "parUnused": 95
+    }
+  ]
+}
