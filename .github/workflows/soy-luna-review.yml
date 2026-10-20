@@ -1,0 +1,46 @@
+name: Soy Luna private review
+on:
+  pull_request:
+    branches: ['audit/refonte-mariam-20261020']
+    paths:
+      - 'experience/soy-luna/**'
+      - '.github/workflows/soy-luna-review.yml'
+permissions:
+  contents: read
+concurrency:
+  group: soy-luna-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Dependencies and existing regression tests
+        working-directory: experience
+        run: |
+          npm ci
+          npm test
+      - name: Review new scene when source is present
+        working-directory: experience
+        run: |
+          if test -f soy-luna/test/browser.mjs; then
+            npm install --no-save --package-lock=false playwright@1.55.0
+            npx playwright install --with-deps chromium webkit
+            node soy-luna/test/unit.mjs
+            node soy-luna/test/browser.mjs
+          else
+            echo "Preproduction only. No new gameplay test has run."
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: soy-luna-review
+          path: experience/soy-luna/evidence/
+          if-no-files-found: ignore
+          retention-days: 14
