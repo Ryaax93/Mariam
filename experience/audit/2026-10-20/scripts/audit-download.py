@@ -1,7 +1,7 @@
 import urllib.request, concurrent.futures, hashlib, json
 from pathlib import Path
-src=Path('/workspace/scratch/61a72ae9fc98/Mariam')
-dest=Path('/workspace/scratch/61a72ae9fc98/qa/audit-20261020/production')
+src=Path(__file__).resolve().parents[4]
+dest=Path('qa/audit-20261020/production')
 files=['experience/index.html','experience/game.js','experience/game.css','experience/story.html','experience/app.js','experience/style.css']+['experience/assets/'+p for p in ['cormorant-regular.woff','cormorant-italic.woff','manrope.woff','heart.svg','IMG_5794.jpeg','IMG_5796.jpeg','IMG_5797.jpeg','IMG_5798.jpeg','IMG_5799.jpeg','IMG_5800.jpeg','adventure-cover.webp','world-roller.webp','world-sweet.webp','world-winter.webp']]
 base='https://ryaax93.github.io/Mariam/'
 def get(rel):
@@ -16,6 +16,6 @@ with urllib.request.urlopen(base+'?v=preserved-adventure-20261020',timeout=45) a
 root_match=root==(src/'index.html').read_bytes()
 (dest/'index.html').write_bytes(root)
 report={'url':base+'experience/?v=adventure-20261020','files':results,'original_root_identical':root_match}
-Path('/workspace/scratch/61a72ae9fc98/qa/audit-20261020/production-hashes.json').write_text(json.dumps(report,indent=2))
+Path('qa/audit-20261020/production-hashes.json').write_text(json.dumps(report,indent=2))
 print(json.dumps(report,indent=2))
 assert root_match and all(x['status']==200 and x['match'] for x in results)

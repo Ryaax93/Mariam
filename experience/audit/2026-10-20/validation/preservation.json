@@ -1,0 +1,37 @@
+[
+  {
+    "path": "index.html",
+    "equal_to_public_base": true,
+    "sha256": "4fc7f9fa2925749fe786bb7eea282c0e6325a94295b0f131b601aa53d545003b"
+  },
+  {
+    "path": "experience/story.html",
+    "equal_to_public_base": true,
+    "sha256": "fabd27accd45b0905cf3c80d8229b5afe8f8d5544a96ac42869a2e5615139b6e"
+  },
+  {
+    "path": "experience/app.js",
+    "equal_to_public_base": true,
+    "sha256": "01fa4dcebb8dacb9aa70b23e1be7bb21dc2eb9c409daa86d4c4975efc8ece911"
+  },
+  {
+    "path": "experience/style.css",
+    "equal_to_public_base": true,
+    "sha256": "8cbf2ff8f5d2ee946afc0f8a832ec3d08ec5929fc9cea9af2303158c5e6f7c6d"
+  },
+  {
+    "path": "experience/src/adventure/levels.js",
+    "equal_to_public_base": true,
+    "sha256": "1907a8f286f367999a78018442321bf88d316a4e972a6ecae523a724218c1fa8"
+  },
+  {
+    "path": "experience/src/adventure/physics.js",
+    "equal_to_public_base": true,
+    "sha256": "c12e408cb7ebe16a9354de5a3c2ba7535b194b8c007a154dc5052972d2d3f68c"
+  },
+  {
+    "path": "experience/src/adventure/sound.js",
+    "equal_to_public_base": true,
+    "sha256": "73943fba375ca05a68b6abc7550d3f2fe51d385e2ec83bb0c2b53991d4e18a72"
+  }
+]

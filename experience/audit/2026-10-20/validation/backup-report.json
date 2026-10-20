@@ -1,0 +1,14 @@
+{
+  "checks": [
+    "Export produit un vrai fichier JSON avec les anciens records",
+    "Import conserve le meilleur record et ajoute le nouveau",
+    "Import invalide refusé sans effacer les records",
+    "Checkpoint importé reprend les bons cœurs, objets et temps",
+    "Le temps actif réel reste figé pendant la pause",
+    "Quitter la carte après import ne remplace pas le checkpoint importé",
+    "Importer pendant une pause ne réécrit pas le checkpoint avec l’ancienne session",
+    "Sauvegarde historique du village inchangée",
+    "Aucune erreur JavaScript dans export, import et reprise"
+  ],
+  "errors": []
+}

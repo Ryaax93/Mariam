@@ -1,0 +1,12 @@
+{
+  "checks": [
+    "Le monde 1, son panorama et sa musique sont chargés",
+    "Le monde 2, son panorama et sa musique sont chargés",
+    "Le monde 3, son panorama et sa musique sont chargés",
+    "La lettre finale est relisible depuis la carte après la campagne",
+    "La perte du focus met automatiquement la partie en pause",
+    "Sans WebGL, une erreur claire propose de recharger ou ouvrir les souvenirs",
+    "Un stockage bloqué est signalé sans empêcher de jouer"
+  ],
+  "errors": []
+}

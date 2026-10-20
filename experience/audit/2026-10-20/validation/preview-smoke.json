@@ -1,0 +1,23 @@
+{
+  "checks": [
+    "Accueil privé sans débordement en portrait",
+    "Accueil privé sans débordement en paysage",
+    "Le lien privé charge le nouveau bundle",
+    "Déplacement et saut dans le paquet de livraison",
+    "Commandes de sauvegarde accessibles",
+    "Retour au ciel original dans la copie privée",
+    "Aucune erreur console dans le jeu livré",
+    "Le ciel original est servi",
+    "Le monde de souvenirs reste accessible",
+    "Aucune erreur JavaScript dans la copie livrée"
+  ],
+  "errors": [],
+  "resourceErrors": [
+    {
+      "message": "Failed to load resource: net::ERR_EMPTY_RESPONSE",
+      "url": "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Italiana&family=Jost:wght@200;300;400&family=Parisienne&display=swap",
+      "page": "http://127.0.0.1:45085/original.html"
+    }
+  ],
+  "scope": "Local HTTP of exact packaged assets; not authenticated hosted Safari"
+}

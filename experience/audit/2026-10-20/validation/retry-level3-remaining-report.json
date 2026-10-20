@@ -1,0 +1,81 @@
+{
+  "errors": [],
+  "report": [
+    {
+      "id": 2,
+      "perf": {
+        "frames": 352,
+        "wallSeconds": 29.808600000000094,
+        "fps": 11.808672664935585,
+        "p95ms": 145.29999999981374,
+        "over50ms": 325
+      },
+      "status": "won",
+      "mode": "result",
+      "time": 17.92222222222247,
+      "elapsed": 31.572700000000108,
+      "hp": 2,
+      "falls": 0,
+      "hits": 1,
+      "relics": [
+        0,
+        1,
+        2
+      ],
+      "records": {
+        "0": {
+          "stars": 1,
+          "time": 99,
+          "coins": 0
+        },
+        "1": {
+          "stars": 1,
+          "time": 99,
+          "coins": 0
+        },
+        "2": {
+          "stars": 1,
+          "time": 17.92222222222247,
+          "coins": 13,
+          "realTime": 31.572700000000108
+        },
+        "3": {
+          "stars": 1,
+          "time": 99,
+          "coins": 0
+        },
+        "4": {
+          "stars": 1,
+          "time": 99,
+          "coins": 0
+        },
+        "5": {
+          "stars": 1,
+          "time": 99,
+          "coins": 0
+        },
+        "6": {
+          "stars": 1,
+          "time": 99,
+          "coins": 0
+        },
+        "7": {
+          "stars": 1,
+          "time": 99,
+          "coins": 0
+        },
+        "8": {
+          "stars": 1,
+          "time": 99,
+          "coins": 0
+        }
+      },
+      "graphics": {
+        "calls": 75,
+        "triangles": 160138,
+        "geometries": 111,
+        "textures": 13
+      }
+    }
+  ]
+}

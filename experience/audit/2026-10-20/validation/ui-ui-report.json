@@ -1,0 +1,49 @@
+{
+  "checks": [
+    "Un niveau verrouillé reste inaccessible",
+    "La musique démarre après un geste",
+    "Le score produit un signal audio réel",
+    "Deux doigts : avancer et sauter simultanément",
+    "Le relâchement tactile ne laisse aucune commande bloquée",
+    "La pause arrête la physique et le chronomètre",
+    "Le bouton coupe et suspend le son",
+    "Le son reprend après activation",
+    "Le mode léger s’applique au moteur",
+    "Les effets doux sont activés",
+    "La reprise retourne en jeu",
+    "Le clavier déplace le personnage",
+    "Échap met en pause",
+    "Recommencer rétablit les vies et les objets",
+    "Trois chutes affichent une défaite jouable",
+    "Le bouton réessayer recharge le même niveau",
+    "Les options sont conservées en mémoire",
+    "Les neuf souvenirs gagnés sont accessibles",
+    "Le souvenir de la voiture charge la vraie photo",
+    "La carte ne déborde pas à 320×568",
+    "Le bouton de départ est visible à 320×568",
+    "Commandes visibles sans chevauchement à 320×568",
+    "La carte ne déborde pas à 430×932",
+    "Le bouton de départ est visible à 430×932",
+    "Commandes visibles sans chevauchement à 430×932",
+    "La carte ne déborde pas à 852×393",
+    "Le bouton de départ est visible à 852×393",
+    "Commandes visibles sans chevauchement à 852×393",
+    "La carte ne déborde pas à 1440×900",
+    "Le bouton de départ est visible à 1440×900",
+    "Commandes visibles sans chevauchement à 1440×900",
+    "Les ressources 3D ne s’accumulent pas sur les reprises",
+    "Aucune erreur JavaScript ou ressource manquante"
+  ],
+  "errors": [],
+  "audioSignal": 0.0074375588446855545,
+  "memory": {
+    "baseline": {
+      "geometries": 76,
+      "textures": 17
+    },
+    "after": {
+      "geometries": 75,
+      "textures": 17
+    }
+  }
+}

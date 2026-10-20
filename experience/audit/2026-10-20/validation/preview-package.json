@@ -1,0 +1,26 @@
+{
+  "runtime_files": [
+    {
+      "path": "game.js",
+      "sha256": "a88055703adb5b06d0996e7f0322bbb724ef2aeac7e857bceeef8464aed72ae9",
+      "equal": true
+    },
+    {
+      "path": "game.css",
+      "sha256": "e2cf05d4f6c90a91111121c2701495243e9bdf2c8b06c7a3d43b3bb355a04464",
+      "equal": true
+    },
+    {
+      "path": "app.js",
+      "sha256": "01fa4dcebb8dacb9aa70b23e1be7bb21dc2eb9c409daa86d4c4975efc8ece911",
+      "equal": true
+    },
+    {
+      "path": "style.css",
+      "sha256": "8cbf2ff8f5d2ee946afc0f8a832ec3d08ec5929fc9cea9af2303158c5e6f7c6d",
+      "equal": true
+    }
+  ],
+  "html_changes": "Only navigation to the original stars uses ../original.html in private copy",
+  "root_original_equal": true
+}

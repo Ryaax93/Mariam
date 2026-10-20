@@ -1,0 +1,28 @@
+✔ Niveau 1 : parcours intégral sans téléportation (9.258127ms)
+✔ Niveau 2 : parcours intégral sans téléportation (13.164114ms)
+✔ Niveau 3 : parcours intégral sans téléportation (15.786453ms)
+✔ Niveau 4 : parcours intégral sans téléportation (4.392422ms)
+✔ Niveau 5 : parcours intégral sans téléportation (7.090574ms)
+✔ Niveau 6 : parcours intégral sans téléportation (8.285869ms)
+✔ Niveau 7 : parcours intégral sans téléportation (3.041001ms)
+✔ Niveau 8 : parcours intégral sans téléportation (5.656439ms)
+✔ Niveau 9 : parcours intégral sans téléportation (10.398498ms)
+✔ Le saut est déclenché une fois, puis la gravité ramène au sol (0.818085ms)
+✔ Trois chutes entraînent une défaite et arrêtent la simulation (0.214654ms)
+✔ Un point de reprise conserve les objets déjà récupérés (0.115835ms)
+✔ Le portail ne gagne pas la partie sans les trois objets (0.200052ms)
+✔ Le sprint est limité par son temps de recharge (0.204519ms)
+✔ Les guimauves ne rebondissent que sur leur coussin visible (0.186752ms)
+✔ Les plateformes mobiles transportent le personnage (0.243347ms)
+✔ Une reprise restitue le checkpoint, les objets, les cœurs et les deux temps (2.59645ms)
+✔ Une sauvegarde corrompue ne permet pas de sortir des niveaux ou des objets (0.358221ms)
+✔ Les anciens records restent compatibles et une importation conserve les meilleurs (0.588478ms)
+✔ Le fichier exporté peut être importé et les formats étrangers sont refusés (0.899869ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 185.142874
