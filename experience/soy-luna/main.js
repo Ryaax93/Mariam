@@ -16,7 +16,7 @@ function clearInput(){keys.clear();stickX=stickY=0;touch.jump=touch.boost=false;
 function input(){return {forward:Math.max(-1,Math.min(1,-stickY+(keys.has('ArrowUp')||keys.has('KeyW')||keys.has('KeyZ')?1:0)-(keys.has('ArrowDown')||keys.has('KeyS')?1:0))),steer:Math.max(-1,Math.min(1,stickX+(keys.has('ArrowRight')||keys.has('KeyD')?1:0)-(keys.has('ArrowLeft')||keys.has('KeyA')||keys.has('KeyQ')?1:0))),jump:touch.jump||keys.has('Space'),boost:touch.boost||keys.has('ShiftLeft')||keys.has('ShiftRight')};}
 function persist(){
  if(!session)return;
- if(['playing','pause'].includes(mode)&&session.hp>0)saved=session.snapshot();
+ if(['playing','pause'].includes(mode)&&['playing','paused'].includes(session.status)&&session.hp>0)saved=session.snapshot();
  try{localStorage.setItem(SAVE_KEY,JSON.stringify({version:1,run:saved,options,record}));storageOK=true;}catch{if(storageOK)toast('Le navigateur ne peut pas garder cette partie.');storageOK=false;}
 }
 function ui(next){
@@ -31,7 +31,7 @@ function event(kind,data){
  if(kind==='jump'){}
  if(kind==='land'&&data)toast('Une étoile sur les rollers ! +100');
  if(kind==='bump')toast('Oups ! Un petit coup de frein.');
- if(kind==='fall'){persist();toast('Je garde ta place. On repart ensemble.');}
+ if(kind==='fall'){if(session.hp<=0)saved=null;persist();toast('Je garde ta place. On repart ensemble.');}
  if(kind==='respawn'){follow.reset();persist();}
  if(kind==='win'||kind==='lose'){
   saved=null;
@@ -111,7 +111,7 @@ try{
  };
  // Explicit camera regression fixture, only when requested in a test URL.
  if(new URLSearchParams(location.search).has('camera-test')){
-  const obstacle=new T.Mesh(new T.TorusGeometry(3.4,.38,12,60),new T.MeshStandardMaterial({color:0xc05e99,roughness:.5}));obstacle.position.set(0,2,4);scene.add(obstacle);sight.attach(obstacle);sight.enabled.value=new URLSearchParams(location.search).get('camera-test')==='before'?0:1;
+  const obstacle=new T.Mesh(new T.TorusGeometry(2.7,.6,12,60),new T.MeshStandardMaterial({color:0xc05e99,roughness:.5}));obstacle.position.set(2.7,2,3.5);scene.add(obstacle);sight.attach(obstacle);sight.enabled.value=new URLSearchParams(location.search).get('camera-test')==='before'?0:1;
  }
  requestAnimationFrame(animate);
 }catch(e){fail(e);}
