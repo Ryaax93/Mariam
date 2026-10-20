@@ -1,0 +1,25 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import {SkateSession,FixedClock,validateRun} from '../simulation.js';
+import {GATES,floor,width} from '../track.js';
+import {MariamRig} from '../character.js';
+const results=[];function test(name,fn){fn();results.push({name,pass:true});}
+function run(rate=60,seconds=2,inp={forward:1}){const s=new SkateSession();s.start();const c=new FixedClock();for(let i=0;i<rate*seconds;i++)c.advance(1/rate,s,inp);return s;}
+test('acceleration progressive',()=>{const s=run();assert(s.v>7&&s.v<7.6);assert(s.s>10);});
+test('brake and release have different inertia',()=>{const a=run(),b=run();for(let i=0;i<60;i++){a.step(1/120,{forward:-1});b.step(1/120,{});}assert(a.v<b.v);});
+test('fixed time at 30/60/120 rendering Hz',()=>{const a=run(30),b=run(60),c=run(120);assert(Math.abs(a.s-b.s)<.08);assert(Math.abs(b.s-c.s)<.08);});
+test('pause prevents movement and active clock',()=>{const s=run(),c=new FixedClock(),x=s.s,t=s.elapsed;s.pause();c.advance(4,s,{forward:1});assert.equal(s.s,x);assert.equal(s.elapsed,t);});
+test('jump and landing under gravity',()=>{const s=new SkateSession();s.start();s.step(1/120,{jump:true});assert(!s.grounded&&s.vy>0);for(let i=0;i<160;i++)s.step(1/120,{});assert(s.grounded);assert.equal(s.y,0);});
+test('edge fall costs one heart, then checkpoint',()=>{const s=new SkateSession();s.start();s.checkpoint=74;s.s=80;s.lane=width(80)+1;for(let i=0;i<250;i++)s.step(1/120,{});assert.equal(s.hp,2);assert.equal(s.falls,1);assert.equal(s.s,74);});
+test('fall cannot charge a second time during recovery',()=>{const s=new SkateSession();s.start();s.fall();s.fall();assert.equal(s.hp,2);});
+test('last heart leads to defeat',()=>{const s=new SkateSession();s.start();s.hp=1;s.fall();for(let i=0;i<140;i++)s.step(1/120,{});assert.equal(s.status,'lost');});
+test('restore preserves progress but uses safe checkpoint',()=>{const s=new SkateSession();s.start();s.checkpoint=74;s.s=80;s.notes.add(0);s.passed.add(0);const out=new SkateSession();assert(out.restore(s.snapshot()));assert.equal(out.s,74);assert(out.notes.has(0));assert.equal(out.status,'ready');});
+test('hostile and incomplete saves rejected',()=>{const s=new SkateSession().snapshot();for(const v of [{...s,hp:0},{...s,score:NaN},{...s,checkpoint:20},{...s,notes:[19]},{...s,notes:[0]},{...s,passed:[0,0]}])assert.equal(validateRun(v),null);});
+test('time deficit reported on long frame',()=>{const s=new SkateSession();s.start();const c=new FixedClock();c.advance(1,s,{});assert.equal(s.elapsed,1);assert(c.dropped>=.75);assert(s.time<=.251);});
+test('gap and bypass geometry agree with collision',()=>{assert.equal(floor(119,0),null);assert.equal(floor(119,3.2),0);assert(floor(115,0)>1);});
+test('complete course by deterministic ordinary inputs',()=>{const s=new SkateSession();s.start();const c=new FixedClock();for(let i=0;i<120*100&&s.status==='playing';i++){const g=GATES.find(g=>!s.passed.has(g.id));let lane=g?.lane||0;if(s.s>115&&s.s<123)lane=0;const steer=Math.max(-1,Math.min(1,(lane-s.lane)*1.5-s.vl*.6));c.advance(1/120,s,{forward:1,steer,jump:s.s>115&&s.s<116});}assert.equal(s.status,'won');assert(s.notes.size>=8);});
+const rig=new MariamRig();
+test('real shared skeleton with weighted geometry',()=>{assert.equal(rig.bones.length,20);assert(rig.stats.triangles>3000);assert(rig.stats.triangles<26000);for(const m of rig.meshes){assert(m.isSkinnedMesh);assert.equal(m.skeleton,rig.skeleton);const w=m.geometry.attributes.skinWeight;for(let j=0;j<w.count;j++)assert(Math.abs(w.getX(j)+w.getY(j)+w.getZ(j)+w.getW(j)-1)<.0001);}});
+test('all character geometry finite',()=>{for(const m of rig.meshes)for(const k of ['position','normal'])assert([...m.geometry.attributes[k].array].every(Number.isFinite));});
+await fs.mkdir(new URL('../evidence/',import.meta.url),{recursive:true});
+const report={engine:'Node, deterministic simulation and geometry only',results,rig:rig.stats};await fs.writeFile(new URL('../evidence/unit.json',import.meta.url),JSON.stringify(report,null,2));console.log('LUNA_UNIT_REPORT '+JSON.stringify(report));

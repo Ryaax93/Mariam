@@ -33,10 +33,13 @@ jobs:
             npm install --no-save --package-lock=false playwright@1.55.0
             npx playwright install --with-deps chromium webkit
             node soy-luna/test/unit.mjs
-            node soy-luna/test/browser.mjs
           else
             echo "Preproduction only. No new gameplay test has run."
           fi
+      - name: Playable browser and rendered captures
+        if: always()
+        working-directory: experience
+        run: node soy-luna/test/browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:

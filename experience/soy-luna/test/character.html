@@ -1,0 +1,6 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Mariam — contrôle du vrai modèle 3D</title><style>html,body{margin:0;background:#ddd3cd}canvas{display:block}p{position:absolute;top:0;left:20px;font:12px sans-serif;color:#65475c}</style></head><body><p>Modèle de développement — ressemblance non validée · vrai maillage 3D riggé</p><script type="module">
+import * as T from '../../vendor/three.module.js';import {MariamRig} from '../character.js';
+const r=new T.WebGLRenderer({antialias:true});r.setSize(innerWidth,innerHeight);r.outputColorSpace=T.SRGBColorSpace;r.toneMapping=T.ACESFilmicToneMapping;document.body.append(r.domElement);
+const s=new T.Scene();s.background=new T.Color(0xddd3cd);s.add(new T.HemisphereLight(0xffffff,0x76657a,2.5));const l=new T.DirectionalLight(0xffe8d5,2.5);l.position.set(-3,5,4);s.add(l);const a=new MariamRig();s.add(a.root);
+const c=new T.PerspectiveCamera(32,innerWidth/innerHeight,.1,30);c.position.set(0,1.4,4.6);c.lookAt(0,1.15,0);window.setReviewAngle=v=>{a.root.rotation.y=v;r.render(s,c);};window.setReviewAngle(0);window.rigReviewReady=true;
+</script></body></html>
