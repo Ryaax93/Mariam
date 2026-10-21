@@ -67,7 +67,7 @@ export class LunaWorld{
   const m=new T.Mesh(new T.PlaneGeometry(w,w/4),new T.MeshStandardMaterial({map:texture,roughness:.7,side:T.DoubleSide}));m.position.set(x,y,z);parent.add(m);return m;
  }
  shop(s,side,color,name){
-  const x=center(s)+side*11,z=-s,g=new T.Group();g.position.set(x,0,z);g.rotation.y=side*.12;this.decor.add(g);
+  const x=center(s)+side*11,z=-s,g=new T.Group();g.position.set(x,0,z);g.rotation.y=-side*Math.PI*.36;this.decor.add(g);
   this.box(color,0,2.3,0,6.2,4.6,4.8,g);this.box(0xffedd7,0,.18,2.6,6.8,.36,1.4,g);this.box(0xe7c6b2,0,4.5,0,6.55,.25,5.1,g);
   for(const xx of [-1.8,0,1.8]){
    this.box(0x7b889a,xx,1.7,2.415,1.42,2.7,.035,g);

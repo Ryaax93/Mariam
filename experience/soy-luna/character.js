@@ -93,7 +93,7 @@ export class MariamRig{
  animate(dt,state,heading){
   const b=this.bones,v=Math.abs(state.v),amount=Math.min(1,v/6);this.phase+=dt*(1.3+v*.45);
   const cycle=Math.sin(this.phase*TAU),lift=Math.cos(this.phase*TAU);
-  this.heading+=Math.atan2(Math.sin(heading-this.heading),Math.cos(heading-this.heading))*(1-Math.exp(-dt*9));this.root.rotation.y=this.heading;
+  this.heading+=Math.atan2(Math.sin(heading-this.heading),Math.cos(heading-this.heading))*(1-Math.exp(-dt*9));this.root.rotation.y=this.heading+(!state.grounded&&state.trick>0?Math.PI*2*(state.trick*state.trick*(3-2*state.trick)):0);
   const crouch=state.grounded?.08+amount*.12:.25;
   b[0].position.y=1.12-crouch*.3-Math.sin(Math.min(1,state.landing/.3)*Math.PI)*.07;
   b[1].rotation.x=amount*.12;b[2].rotation.z=-state.vl*.045;
