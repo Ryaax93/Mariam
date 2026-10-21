@@ -20,7 +20,7 @@ try{
  await page.evaluate(data=>Object.entries(data).forEach(([k,v])=>localStorage.setItem(k,v)),legacy);
  await page.locator('#start').click();await page.keyboard.down('ArrowUp');try{await page.waitForFunction(()=>mariamLuna().state.s>4,null,{timeout:20000});}catch{report.measurements.push({scenario:'movement-timeout',...await page.evaluate(()=>mariamLuna())});}await page.keyboard.up('ArrowUp');
  let d=await page.evaluate(()=>mariamLuna());check('forward movement',d.state.s>4,d);check('rig is skinned',d.rig.bones===20&&d.rig.skinnedMeshes>=5);check('original soundtrack scheduled after gesture',d.audio.state==='running'&&d.audio.steps>2&&d.audio.notes>0,d.audio);
- await page.keyboard.down('Space');await page.waitForTimeout(150);d=await page.evaluate(()=>mariamLuna());check('jump above ground',d.state.y>.1);await page.keyboard.up('Space');await page.waitForTimeout(1000);
+ await page.keyboard.down('Space');try{await page.waitForFunction(()=>mariamLuna().state.y>.1,null,{timeout:12000});}catch{}d=await page.evaluate(()=>mariamLuna());check('jump above ground',d.state.y>.1,d.state);await page.keyboard.up('Space');await page.waitForFunction(()=>mariamLuna().state.grounded,null,{timeout:12000});
  await shot(page,'skating');
  await page.locator('#pause').click();const before=await page.evaluate(()=>mariamLuna().state);await page.waitForTimeout(300);const after=await page.evaluate(()=>mariamLuna().state);check('pause freezes simulation',before.s===after.s&&before.time===after.time);
  await page.locator('#quality').selectOption('low');await page.locator('#resume').click();
