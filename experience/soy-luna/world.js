@@ -11,7 +11,7 @@ function merge(list){
 }
 export class LunaWorld{
  constructor(scene){
-  this.scene=scene;this.decor=new T.Group();this.play=new T.Group();this.detail=new T.Group();scene.add(this.decor,this.play,this.detail);this.materials=new Map();this.gates=[];this.wheel=new T.Group();this.booths=[];this.flags=[];this.leaves=[];this.time=0;this.random=rng(104);
+  this.scene=scene;this.decor=new T.Group();this.play=new T.Group();this.detail=new T.Group();scene.add(this.decor,this.play,this.detail);this.materials=new Map();this.gates=[];this.wheel=new T.Group();this.booths=[];this.flags=[];this.leaves=[];this.time=0;this.chunks=[];this.random=rng(104);
   this.sky();this.ground();this.course();this.town();this.ferris();this.musicGates();this.checkpoints();this.batch(this.wheel);this.batch(this.play);this.batch(this.decor);this.batch(this.detail);
  }
  mat(color,rough=.7){const key=color+':'+rough;if(!this.materials.has(key))this.materials.set(key,new T.MeshStandardMaterial({color,roughness:rough,metalness:rough<.4?.15:.02}));return this.materials.get(key);}
@@ -140,14 +140,16 @@ export class LunaWorld{
  checkpoints(){for(const s of [74,144]){const x=center(s)-4.3;this.pipe(0xa47d68,[[x,0,-s],[x,2,-s]],.04);const flag=this.box(0xe4a1b7,x+.35,1.7,-s,.7,.4,.03);this.flags.push(flag);}}
  batch(root){
   root.updateMatrixWorld(true);const groups=new Map(),remove=[],inverse=new T.Matrix4().copy(root.matrixWorld).invert();
+  const partition=root===this.decor||root===this.detail;
   root.traverse(m=>{if(!m.isMesh||m.material.map)return;for(let p=m.parent;p&&p!==root;p=p.parent)if(p.userData.dynamic)return;if(root!==this.wheel&&this.wheel.getObjectById(m.id))return;
-   const g=m.geometry.clone();g.applyMatrix4(new T.Matrix4().multiplyMatrices(inverse,m.matrixWorld));if(!groups.has(m.material))groups.set(m.material,[]);groups.get(m.material).push(g);remove.push(m);
+   const g=m.geometry.clone();g.applyMatrix4(new T.Matrix4().multiplyMatrices(inverse,m.matrixWorld));g.computeBoundingBox();const z=g.boundingBox.getCenter(new T.Vector3()).z,zone=partition?Math.floor(z/24):0,key=m.material.uuid+':'+zone;
+   if(!groups.has(key))groups.set(key,{mat:m.material,geos:[],zone});groups.get(key).geos.push(g);remove.push(m);
   });
   remove.forEach(m=>{m.removeFromParent();m.geometry.dispose();});
-  for(const [mat,geos] of groups){const m=new T.Mesh(merge(geos),mat);m.receiveShadow=true;m.castShadow=true;root.add(m);geos.forEach(g=>g.dispose());}
+  for(const {mat,geos,zone} of groups.values()){const m=new T.Mesh(merge(geos),mat);m.receiveShadow=true;m.castShadow=true;root.add(m);if(partition)this.chunks.push({mesh:m,z:zone*24+12});geos.forEach(g=>g.dispose());}
  }
  update(dt,s,low=false){
-  this.time+=dt;this.detail.visible=!low;this.sun.castShadow=!low;
+  this.time+=dt;for(const c of this.chunks)c.mesh.visible=Math.abs(c.z+s.s)<(low?66:96);this.detail.visible=!low;this.sun.castShadow=!low;
   this.sun.position.set(center(s.s)-15,25,-s.s+16);this.sun.target.position.set(center(s.s),0,-s.s-10);
   this.wheel.rotation.z=this.time*.035;
   for(const b of this.booths){const a=b.userData.angle;b.position.set(Math.cos(a)*8,Math.sin(a)*8,0);b.rotation.z=-this.wheel.rotation.z;}

@@ -4,7 +4,8 @@ export function center(s){return 7*Math.sin(s/32)-2*Math.sin(s/14);}
 export function slope(s){return 7/32*Math.cos(s/32)-2/14*Math.cos(s/14);}
 export function width(s){return s<32?6.6:s>180?6.2:5.4;}
 export function floor(s,lane){
- if(Math.abs(lane)>width(s))return null;
+ if(Math.abs(lane)>width(s)+1.2)return null;
+ if(Math.abs(lane)>width(s))return -.025;
  if(s>116&&s<122&&Math.abs(lane)<2.4)return null;
  if(s>104&&s<=116&&Math.abs(lane)<2.4)return (s-104)/12*1.35;
  return 0;
