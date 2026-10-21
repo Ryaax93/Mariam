@@ -1,8 +1,19 @@
 # Mariam — Les jardins de Luna
-Travail isolé depuis `377ad0c71c2939d7e22654b0b1cab4993344ae66`, branche `feature/soy-luna-vertical-slice`.
 
-Cette scène est en développement. Le rendu, la fidélité du personnage et Safari sur iPhone physique ne sont pas encore validés. La version publique et les trois sauvegardes historiques sont conservées.
+Première scène 3D jouable dans `/experience/soy-luna/`, branche `feature/soy-luna-vertical-slice`. La version publique reste intacte.
 
-Le premier objectif est un circuit de patinage dans un jardin de fête au coucher du soleil : trajectoires, glisse, portes rythmiques, rampe et final. Les autres mondes et le Fashion Studio attendent la validation de cette scène.
+Joystick vers le haut : pousser ; gauche/droite : tourner ; bas : freiner. Élan accélère. Saut permet une figure en gardant le bouton appuyé. Clavier : flèches/ZQSD/WASD, Espace, Maj, Échap.
 
-Les preuves de l'audit restent dans [../audit/2026-10-20](../audit/2026-10-20). Les tests précédents ne valident pas ce nouveau code.
+12 notes, trois cœurs, deux checkpoints, tremplin avec contournement, final romantique et score. Pause : musique, mouvements doux, qualité et reprise. Le portrait demande de tourner le téléphone ; aucune rotation ou plein écran forcés. La progression est propre au domaine.
+
+- [Bible artistique](ART-DIRECTION.md)
+- [Plan technique](TECHNICAL-PLAN.md)
+- [Assets](ASSETS.md)
+- [Résultats réels](VALIDATION.md)
+- [Captures](review.html)
+
+Mariam est un vrai modèle skinné, provisoire. Le visage et les animations artistiques restent à finaliser. Safari sur iPhone physique et les 60 FPS ne sont pas validés. Hub, Fashion Studio, autres univers, tenues et sauvetage restent à construire après validation.
+
+Tests : depuis `experience/`, `npm ci && npm test` pour les tests classiques, `node soy-luna/test/unit.mjs` pour la simulation et le rig. Le workflow Soy Luna private review installe Playwright 1.55.0 / Chromium / WebKit et exécute `node soy-luna/test/browser.mjs`. Les preuves sont dans evidence/. Aucun contrôle de production ne permet de téléporter Mariam ou forcer la victoire.
+
+`test/character.html` : contrôle du vrai modèle. `?camera-test=before` et `?camera-test=after` : scène d'occultation volontaire, distincte du parcours normal.

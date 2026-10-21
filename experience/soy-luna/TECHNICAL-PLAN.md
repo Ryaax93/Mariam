@@ -19,11 +19,11 @@ Nouvelle clé versionnée mariam-luna-slice-v1. Reprise au dernier secteur, obje
 | test/ | Modèle, navigateur et captures, séparés des anciens résultats |
 
 ## Boucle de jeu
-Circuit d'environ 200 m : découverte de la poussée et du frein ; slalom doux entre portes ; promenade musicale ; tremplin facultatif et zone d'atterrissage large ; final avec souvenir et score. Les portes manquées ne bloquent pas le parcours ; recommencer permet d'améliorer score, rythme et temps. Pas d'échec au chronomètre.
+Circuit de 220 unités de jeu : découverte de la poussée et du frein ; slalom doux entre portes ; promenade musicale ; tremplin facultatif et zone d'atterrissage large ; final avec souvenir et score. Les portes manquées ne bloquent pas le parcours ; recommencer permet d'améliorer score, rythme et temps. Pas d'échec au chronomètre.
 
 Touches : flèches ou ZQSD/WASD, espace saut, Maj accélération, frein avec recul. Tactile : joystick gauche direction/poussée, boutons accélération et saut à droite. Relâchement, pointercancel, blur, pause et changement d'orientation effacent les entrées. Le portrait interrompt la partie et demande de tourner ; aucune rotation imposée par API.
 
-## Caméra : défaut encore ouvert
+## Caméra : nouvelle protection et portée de validation
 Le masque précédent ne protégeait que le corps. Nouvelle scène : pas d'anneau géant sur l'axe de jeu ; caméra suit la tangente, cible un point en avant ; matériaux des seuls décors peuvent s'effacer dans un corridor entre la projection du corps et la zone d'atterrissage. Le sol, les obstacles jouables et les marqueurs ne s'effacent pas. Le personnage ne devient jamais transparent.
 
 Validation requise : capturer mêmes positions avant/après avec obstacle volontaire de régression ; vérifier visage/pieds et repère d'atterrissage dans l'image ; parcourir accélération/saut/respawn avec caméra active. Une inspection de code ou un rayon libre ne suffit pas à déclarer le bug corrigé. Le défaut des neuf niveaux classiques n'est pas automatiquement corrigé par la scène isolée.

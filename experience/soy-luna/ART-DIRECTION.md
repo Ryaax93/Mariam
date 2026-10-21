@@ -5,7 +5,7 @@ Un petit parc de rollers au bord d'une lagune, à l'heure où le soleil devient 
 Le projet reprend les fichiers et corrections de la branche auditée 377ad0c. Le circuit continu est nouveau : le modèle de plateformes classique ne permet pas une glisse inertielle, des virages et une piste courbe. Les neuf niveaux restent disponibles sans réécriture.
 
 ## Références officielles vues
-Les trois planches visibles dans la conversation ont été analysées : turnaround détaillé face/profil/dos et expressions ; planche des tenues ; planche des trois ambiances. La vidéo iPhone n'a pas pu être lue dans l'environnement indisponible. Son constat utilisateur est conservé comme bug ouvert : anneaux et décors devant le personnage et les plateformes.
+Les trois planches visibles dans la conversation ont été analysées : turnaround détaillé face/profil/dos et expressions ; planche des tenues ; planche des trois ambiances. L'enregistrement iPhone n'est pas accessible localement. Deux images de la vidéo d'animation locale A9E38F83-C611-4976-85D7-27352EF6D50A.mov ont été examinées à 12 s (monde gourmand) et 65 s (boutique rose) ; ce n'est pas l'enregistrement du bug. Son constat utilisateur est conservé comme bug ouvert : anneaux et décors devant le personnage et les plateformes.
 
 Mariam : peau mate chaude, très longs cheveux brun foncé volumineux en boucles serrées ; silhouette adulte stylisée et élancée, environ six à six et demie têtes de haut. Grands yeux bruns en amande, sourcils épais, nez défini, lèvres rose brun, cils et sourire. Ne pas éclaircir sa peau, gonfler sa tête ou remplacer ses boucles par une boule lisse.
 
@@ -37,4 +37,4 @@ Hub et Fashion Studio : lieux 3D réels, vêtements distincts sur le même squel
 La qualité de la première scène est le verrou avant cette extension.
 
 ## Son
-Composition instrumentale originale via Web Audio : accords doux à l'accueil, basse/percussion légère pendant le circuit, mélodie plus pleine en finale, accord de récompense. Portes musicales à 108 BPM, retour visuel équivalent quand le son est coupé. Aucun morceau de Soy Luna, film ou jeu commercial copié. Démarrage audio uniquement après geste ; pause et arrière-plan suspendent la musique.
+Composition instrumentale originale via Web Audio : accueil silencieux avant interaction, accords et basse/percussion légère pendant le circuit, mélodie plus pleine en finale, accord de récompense. Portes musicales à 108 BPM, retour visuel équivalent quand le son est coupé. Aucun morceau de Soy Luna, film ou jeu commercial copié. Démarrage audio uniquement après geste ; pause et arrière-plan suspendent la musique.

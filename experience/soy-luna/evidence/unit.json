@@ -1,0 +1,79 @@
+{
+  "engine": "Node, deterministic simulation and geometry only",
+  "results": [
+    {
+      "name": "acceleration progressive",
+      "pass": true
+    },
+    {
+      "name": "brake and release have different inertia",
+      "pass": true
+    },
+    {
+      "name": "fixed time at 30/60/120 rendering Hz",
+      "pass": true
+    },
+    {
+      "name": "pause prevents movement and active clock",
+      "pass": true
+    },
+    {
+      "name": "jump and landing under gravity",
+      "pass": true
+    },
+    {
+      "name": "edge fall costs one heart, then checkpoint",
+      "pass": true
+    },
+    {
+      "name": "fall cannot charge a second time during recovery",
+      "pass": true
+    },
+    {
+      "name": "last heart leads to defeat",
+      "pass": true
+    },
+    {
+      "name": "restore preserves progress but uses safe checkpoint",
+      "pass": true
+    },
+    {
+      "name": "hostile and incomplete saves rejected",
+      "pass": true
+    },
+    {
+      "name": "time deficit reported on long frame",
+      "pass": true
+    },
+    {
+      "name": "gap and bypass geometry agree with collision",
+      "pass": true
+    },
+    {
+      "name": "complete course by deterministic ordinary inputs",
+      "pass": true
+    },
+    {
+      "name": "obstacle slows without removing a heart, then cooldown",
+      "pass": true
+    },
+    {
+      "name": "ivory shoulder is solid until its visible edge",
+      "pass": true
+    },
+    {
+      "name": "real shared skeleton with weighted geometry",
+      "pass": true
+    },
+    {
+      "name": "all character geometry finite",
+      "pass": true
+    }
+  ],
+  "rig": {
+    "bones": 20,
+    "skinnedMeshes": 10,
+    "triangles": 23940,
+    "status": "reference-fidelity-unvalidated"
+  }
+}
