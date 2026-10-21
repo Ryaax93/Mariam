@@ -44,6 +44,7 @@ function event(kind,data){
  }
 }
 function start(resume=false){
+ frames.length=0;clock.dropped=0;clock.steps=0;
  audio.enabled=options.music;audio.unlock();session=new SkateSession(event);if(resume&&saved)session.restore(saved);session.start();follow.reset();ui('playing');last=performance.now();saveAt=0;checkOrientation();toast('Pousse vers le haut pour glisser. Les notes sont à toi.');
 }
 function pause(){if(mode!=='playing')return;session.pause();audio.stop();ui('pause');persist();}
@@ -85,6 +86,7 @@ function animate(now){
   const t=options.soft?0:now*.00009;camera.position.set(3.6+Math.sin(t)*.35,2.15,5.1);camera.lookAt(-1.1,1.35,-1.5);camera.updateMatrixWorld();follow.initial=false;
  }else follow.update(dt,session,options.soft);
  world.update(mode==='pause'?0:dt,session,options.quality==='low');
+ audio.tick(mode==='playing'&&!portrait,session.s/LENGTH);
  bodyPoint.set(p.x,p.y+1.2,p.z);sight.update(renderer,camera,bodyPoint,mode==='welcome'?bodyPoint:follow.landing);
  marker.visible=mode==='playing'&&!session.grounded&&session.y>0;
  marker.position.copy(follow.landing);
@@ -107,7 +109,7 @@ try{
  window.mariamLuna=()=>{
   const sorted=[...frames].sort((a,b)=>a-b),pick=q=>sorted[Math.floor((sorted.length-1)*q)]||0;
   const screen=point=>{const p=point.clone().project(camera);return {x:p.x,y:p.y,z:p.z};};
-  return {version:'luna-slice-1',mode,portrait,state:{s:session.s,lane:session.lane,y:session.y,v:session.v,vl:session.vl,vy:session.vy,grounded:session.grounded,status:session.status,time:session.time,elapsed:session.elapsed,hp:session.hp,notes:[...session.notes],passed:[...session.passed],checkpoint:session.checkpoint,score:session.score,falls:session.falls,hits:session.hits},input:input(),rig:avatar.stats,render:{calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,width:renderer.domElement.width,height:renderer.domElement.height},camera:{body:screen(bodyPoint),landing:screen(follow.landing),position:camera.position.toArray()},performance:{frames:frames.length,p50:pick(.5),p95:pick(.95),fps:frames.length?1000/(frames.reduce((a,b)=>a+b,0)/frames.length):0,droppedSimulation:clock.dropped},save:!!saved,storageOK,audio:{state:audio.ctx?.state||'locked',enabled:audio.enabled,notes:audio.nodes.size},errors:[...errorMessages]};
+  return {version:'luna-slice-1',mode,portrait,state:{s:session.s,lane:session.lane,y:session.y,v:session.v,vl:session.vl,vy:session.vy,grounded:session.grounded,status:session.status,time:session.time,elapsed:session.elapsed,hp:session.hp,notes:[...session.notes],passed:[...session.passed],checkpoint:session.checkpoint,score:session.score,falls:session.falls,hits:session.hits},input:input(),rig:avatar.stats,render:{calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,width:renderer.domElement.width,height:renderer.domElement.height},camera:{body:screen(bodyPoint),landing:screen(follow.landing),position:camera.position.toArray()},performance:{frames:frames.length,p50:pick(.5),p95:pick(.95),fps:frames.length?1000/(frames.reduce((a,b)=>a+b,0)/frames.length):0,droppedSimulation:clock.dropped},save:!!saved,storageOK,audio:{state:audio.ctx?.state||'locked',enabled:audio.enabled,notes:audio.nodes.size,steps:audio.step},errors:[...errorMessages]};
  };
  // Explicit camera regression fixture, only when requested in a test URL.
  if(new URLSearchParams(location.search).has('camera-test')){

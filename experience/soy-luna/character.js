@@ -33,9 +33,10 @@ export class MariamRig{
    if(geom!==g)geom.dispose();g.dispose();
   };
   // Profiled torso and separate fitted garment surfaces, sharing one deforming skeleton.
-  add(loft([[1.05,.21,.125],[1.17,.22,.13],[1.28,.16,.105],[1.39,.158,.105],[1.55,.21,.13],[1.65,.235,.115],[1.73,.12,.09],[1.78,.08,.075]],24),'skin',0,2,(_,y)=>(y-1.2)/.4);
+  add(loft([[1.27,.16,.105],[1.28,.16,.105],[1.39,.158,.105],[1.55,.21,.13],[1.65,.235,.115],[1.73,.12,.09],[1.78,.08,.075]],24),'skin',0,2,(_,y)=>(y-1.2)/.4);
   add(loft([[1.42,.167,.113],[1.5,.193,.134],[1.6,.228,.133],[1.68,.227,.113],[1.72,.11,.09]],24),'black',1,2,(_,y)=>(y-1.4)/.23);
-  add(loft([[1.08,.214,.13],[1.17,.225,.14],[1.24,.19,.117],[1.28,.168,.112]],24),'black',0);
+  add(loft([[1.02,.20,.13],[1.08,.214,.13],[1.17,.225,.14],[1.24,.19,.117],[1.28,.168,.112]],24),'black',0);
+  for(const side of [-1,1])add(tube([[side*.14,1.64,.12],[side*.165,1.73,.07],[side*.16,1.735,-.04],[side*.14,1.64,-.12]],.022,12,6),'black',2);
   add(loft([[1.73,.078,.07],[1.83,.077,.07],[1.88,.09,.075]],16),'skin',3);
   // Sculpted head profile: chin, jaw, cheeks, brow, crown.
   add(loft([[1.85,.025,.035,0,.035],[1.88,.085,.073,0,.035],[1.93,.13,.1,0,.024],[2,.157,.127,0,.008],[2.07,.15,.12],[2.15,.125,.105],[2.2,.065,.065],[2.21,.004,.004]],24),'skin',4);
@@ -54,8 +55,8 @@ export class MariamRig{
    }
    for(let k=0;k<5;k++){const y=.17+k*.024,z=.21-k*.024;add(tube([[side*.135-.045,y,z],[side*.135+.04,y+.012,z-.01]],.005,2,4),'ivory',foot);}
    add(ellipsoid(side*.15,2,.0,.033,.054,.028),'skin',4);
-   add(ellipsoid(side*.066,2.021,.119,.053,.026,.019),'ivory',4);
-   add(ellipsoid(side*.064,2.02,.137,.024,.025,.009),'eye',4);
+   add(ellipsoid(side*.066,2.021,.119,.048,.022,.018),'ivory',4);
+   add(ellipsoid(side*.064,2.02,.137,.024,.022,.009),'eye',4);
    add(ellipsoid(side*.064-.006,2.03,.145,.006,.007,.003),'ivory',4);
    add(tube([[side*.015,2.038,.126],[side*.068,2.05,.136],[side*.118,2.033,.12]],.007,10,4),'hair',4);
    add(tube([[side*.025,2.095,.12],[side*.065,2.105,.128],[side*.116,2.086,.112]],.013,10,4),'hair',4);
@@ -68,13 +69,14 @@ export class MariamRig{
   add(tube([[-.079,1.78,.035],[-.075,1.731,.111],[0,1.683,.143],[.075,1.731,.111],[.079,1.78,.035]],.006,18,4),'gold',2);
   const pendant=heart(.027);pendant.translate(0,1.68,.145);add(pendant,'pink',2);
   // Dense corkscrew locks with graduated head/hair-bone weights.
-  for(let i=0;i<42;i++){
+  add(loft([[2.055,.15,.11,0,-.055],[2.13,.185,.15,0,-.035],[2.22,.14,.13,0,-.025],[2.245,.035,.035,0,-.025]],20),'hair',4);
+  for(let i=0;i<56;i++){
    const a=i*2.399963,ring=.17+(i%3)*.035,side=Math.sin(a)>0?1:-1;
    let x=Math.sin(a)*ring,z=Math.cos(a)*ring-.06;
    if(z>.07){x=side*(.18+Math.abs(x)*.4);z=.035;}
-   const top=2.17+Math.cos(i*4)*.045,length=.83+(i%6)*.055,pts=[];
+   const top=2.17+Math.cos(i*4)*.035,length=.83+(i%6)*.055,pts=[];
    for(let k=0;k<=34;k++){const t=k/34,phase=t*TAU*(4+i%3)+i,spread=Math.sin(t*Math.PI)*.11;pts.push([x+side*spread+Math.cos(phase)*(.028+t*.01),top-t*length,z-Math.sin(t*Math.PI)*.06+Math.sin(phase)*.03]);}
-   add(tube(pts,.023+(i%3)*.003,38,5),i%5?'hair':'hairLight',4,z<-.12?19:side<0?17:18,(_,y)=>(1.98-y)/.7);
+   add(tube(pts,.020+(i%3)*.002,28,5),i%5?'hair':'hairLight',4,z<-.12?19:side<0?17:18,(_,y)=>(1.98-y)/.7);
   }
   // Pink glasses are sculpted loops, sitting above the forehead.
   for(const side of [-1,1]){

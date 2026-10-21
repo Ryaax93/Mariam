@@ -45,6 +45,6 @@ export class SightCorridor{
   renderer.getDrawingBufferSize(this.size);
   const project=(point,out)=>{this.p.copy(point).project(camera);out.set((this.p.x*.5+.5)*this.size.x,(this.p.y*.5+.5)*this.size.y,this.p.z*.5+.5);};
   project(body,this.a.value);project(landing,this.b.value);
-  this.r.value=this.size.y*.145;
+  this.r.value=this.size.y*.21;
  }
 }

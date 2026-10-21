@@ -19,7 +19,7 @@ try{
  const legacy={'mariam-worlds-adventure-v1':'{"records":{"0":{"stars":2,"time":14,"coins":3}}}','mariam-worlds-checkpoint-v2':'{"version":2,"level":0,"checkpoint":0,"hp":3,"time":0,"elapsed":0,"falls":0,"hits":0,"coins":[],"relics":[]}','mariam-little-world-v1':'{"test":"keep"}'};
  await page.evaluate(data=>Object.entries(data).forEach(([k,v])=>localStorage.setItem(k,v)),legacy);
  await page.locator('#start').click();await page.keyboard.down('ArrowUp');await page.waitForTimeout(2200);await page.keyboard.up('ArrowUp');
- let d=await page.evaluate(()=>mariamLuna());check('forward movement',d.state.s>4);check('rig is skinned',d.rig.bones===20&&d.rig.skinnedMeshes>=5);
+ let d=await page.evaluate(()=>mariamLuna());check('forward movement',d.state.s>4);check('rig is skinned',d.rig.bones===20&&d.rig.skinnedMeshes>=5);check('original soundtrack scheduled after gesture',d.audio.state==='running'&&d.audio.steps>2&&d.audio.notes>0,d.audio);
  await page.keyboard.down('Space');await page.waitForTimeout(150);d=await page.evaluate(()=>mariamLuna());check('jump above ground',d.state.y>.1);await page.keyboard.up('Space');await page.waitForTimeout(1000);
  await shot(page,'skating');
  await page.locator('#pause').click();const before=await page.evaluate(()=>mariamLuna().state);await page.waitForTimeout(300);const after=await page.evaluate(()=>mariamLuna().state);check('pause freezes simulation',before.s===after.s&&before.time===after.time);
@@ -34,7 +34,7 @@ try{
  d=await page.evaluate(()=>mariamLuna());check('touch cancel clears input',d.input.forward===0&&!d.input.jump);
  await page.locator('#pause').click();await page.locator('#restart').click();
  const held=new Set();async function press(code,want){if(want&&!held.has(code)){await page.keyboard.down(code);held.add(code);}else if(!want&&held.has(code)){await page.keyboard.up(code);held.delete(code);}}
- const deadline=Date.now()+150000;let checkpoints=0;
+ const deadline=Date.now()+180000;let checkpoints=0,reloaded=false,fallChecked=false;
  while(Date.now()<deadline){
   d=await page.evaluate(()=>mariamLuna());if(d.state.status==='won'||d.state.status==='lost')break;
   const g=(await import('../track.js')).GATES.find(g=>!d.state.passed.includes(g.id));let target=g?.lane||0;
@@ -42,10 +42,25 @@ try{
   const steer=(target-d.state.lane)*1.8-d.state.vl*.7;
   await press('ArrowUp',true);await press('ArrowLeft',steer<-.28);await press('ArrowRight',steer>.28);await press('Space',d.state.s>114.7&&d.state.s<116);
   if(d.state.checkpoint>checkpoints){checkpoints=d.state.checkpoint;await shot(page,'checkpoint-'+checkpoints);}
+  if(d.state.checkpoint===74&&!reloaded){
+   for(const k of [...held])await press(k,false);
+   await page.locator('#pause').click();const savedState=await page.evaluate(()=>mariamLuna().state);
+   await page.reload();await page.waitForFunction(()=>!!window.mariamLuna);check('continue offered after reload',await page.locator('#continue').isVisible());await page.locator('#continue').click();
+   const resumed=await page.evaluate(()=>mariamLuna().state);check('reload resumes checkpoint and collected notes',Math.abs(resumed.s-74)<.05&&resumed.hp===savedState.hp&&JSON.stringify(resumed.notes)===JSON.stringify(savedState.notes));
+   reloaded=true;continue;
+  }
+  if(d.state.checkpoint===144&&!fallChecked){
+   for(const k of [...held])await press(k,false);const hp=d.state.hp,falls=d.state.falls;
+   await press('ArrowRight',true);const end=Date.now()+12000;
+   while(Date.now()<end){d=await page.evaluate(()=>mariamLuna());if(d.state.falls>falls)break;await page.waitForTimeout(60);}
+   await press('ArrowRight',false);check('steering off edge charges exactly one heart',d.state.falls===falls+1&&d.state.hp===hp-1);
+   await page.waitForFunction(()=>mariamLuna().state.s===144&&mariamLuna().state.y===0,null,{timeout:8000});d=await page.evaluate(()=>mariamLuna());check('fall returns to checkpoint with camera',d.state.hp===hp-1&&Math.abs(d.camera.body.x)<1&&Math.abs(d.camera.body.y)<1);
+   await shot(page,'respawn-144');fallChecked=true;continue;
+  }
   await page.waitForTimeout(50);
  }
  for(const k of held)await page.keyboard.up(k);
- check('full course won by keyboard events',d.state.status==='won',d.state);check('course collects notes',d.state.notes.length>=8);
+ check('checkpoint reload and fall exercised',reloaded&&fallChecked);check('full course won by keyboard events',d.state.status==='won',d.state);check('course collects notes',d.state.notes.length>=8);
  await shot(page,'finish');report.measurements.push({scenario:'full-course-low',...d});
  const preserved=await page.evaluate(data=>Object.entries(data).every(([k,v])=>localStorage.getItem(k)===v),legacy);check('three legacy save strings unchanged',preserved);
  for(const [w,h] of [[667,375],[932,430],[393,852]]){
