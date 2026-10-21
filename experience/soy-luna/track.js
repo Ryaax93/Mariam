@@ -2,7 +2,7 @@ export const LENGTH=220, BPM=108, SAVE_KEY='mariam-luna-slice-v1';
 export const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 export function center(s){return 7*Math.sin(s/32)-2*Math.sin(s/14);}
 export function slope(s){return 7/32*Math.cos(s/32)-2/14*Math.cos(s/14);}
-export function width(s){return s<32?6.6:s>180?6.2:5.4;}
+export function width(s){const smooth=x=>{x=clamp(x,0,1);return x*x*(3-2*x);};return 6.6-1.2*smooth((s-24)/16)+.8*smooth((s-172)/16);}
 export function floor(s,lane){
  if(Math.abs(lane)>width(s)+1.2)return null;
  if(Math.abs(lane)>width(s))return -.025;

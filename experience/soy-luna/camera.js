@@ -7,8 +7,8 @@ export class FollowCamera{
   const heading=Math.atan2(slope(s.s+lead),-1);
   this.heading+=Math.atan2(Math.sin(heading-this.heading),Math.cos(heading-this.heading))*(this.initial?1-Math.exp(-dt*2):1);
   const back=new T.Vector3(-Math.sin(this.heading),0,-Math.cos(this.heading));
-  const height=4.5+Math.max(0,s.y)*.45;
-  this.desired.set(x+back.x*7.8,height,-s.s+back.z*7.8);
+  const height=4.15+Math.max(0,s.y)*.4;
+  this.desired.set(x+back.x*7.4,height,-s.s+back.z*7.4);
   this.target.set(center(s.s+lead)+s.lane*.62,.65+Math.max(0,s.y)*.35,-s.s-lead);
   if(!this.initial){this.camera.position.copy(this.desired);this.look.copy(this.target);this.initial=true;}
   else{this.camera.position.lerp(this.desired,1-Math.exp(-dt*(soft?3:5)));this.look.lerp(this.target,1-Math.exp(-dt*6));}
@@ -20,31 +20,22 @@ export class FollowCamera{
  }
  reset(){this.initial=false;}
 }
-// Screen-space capsule protects body and anticipated landing, not just a small torso ellipse.
-// Only scenery materials opt in. Collision geometry and the track remain readable.
+// Opt-in whole-object fading. No shader discard; ground, obstacles and markers are excluded.
 export class SightCorridor{
- constructor(){this.a={value:new T.Vector3()};this.b={value:new T.Vector3()};this.r={value:80};this.size=new T.Vector2();this.p=new T.Vector3();this.enabled={value:1};this.seen=new WeakSet();}
- attach(root){root.traverse(o=>{if(!o.isMesh)return;for(const mat of Array.isArray(o.material)?o.material:[o.material]){
-  if(this.seen.has(mat))continue;this.seen.add(mat);
-  mat.onBeforeCompile=shader=>{
-   Object.assign(shader.uniforms,{sightA:this.a,sightB:this.b,sightRadius:this.r,sightEnabled:this.enabled});
-   shader.fragmentShader='uniform vec3 sightA; uniform vec3 sightB; uniform float sightRadius; uniform float sightEnabled;\n'+shader.fragmentShader;
-   shader.fragmentShader=shader.fragmentShader.replace('#include <clipping_planes_fragment>',`#include <clipping_planes_fragment>
-    vec2 ab=sightB.xy-sightA.xy;
-    float u=clamp(dot(gl_FragCoord.xy-sightA.xy,ab)/max(dot(ab,ab),1.0),0.0,1.0);
-    float d=length(gl_FragCoord.xy-mix(sightA.xy,sightB.xy,u));
-    float depth=mix(sightA.z,sightB.z,u);
-    if(sightEnabled>0.5 && gl_FragCoord.z<depth-0.00001 && d<sightRadius){
-      float opacity=smoothstep(sightRadius*.78,sightRadius,d);
-      float grain=fract(sin(dot(floor(gl_FragCoord.xy),vec2(12.9898,78.233)))*43758.5453);
-      if(grain>opacity*.95)discard;
-    }`);
-  };mat.customProgramCacheKey=()=> 'luna-sight-corridor-1';mat.needsUpdate=true;
- }});}
- update(renderer,camera,body,landing){
-  renderer.getDrawingBufferSize(this.size);
-  const project=(point,out)=>{this.p.copy(point).project(camera);out.set((this.p.x*.5+.5)*this.size.x,(this.p.y*.5+.5)*this.size.y,this.p.z*.5+.5);};
-  project(body,this.a.value);project(landing,this.b.value);
-  this.r.value=this.size.y*.21;
+ constructor(){this.objects=[];this.ray=new T.Raycaster();this.dir=new T.Vector3();this.side=new T.Vector3();this.enabled={value:1};this.faded=[];}
+ attach(root){
+  if(root.userData.cameraOccluder!==true)return;
+  const materials=new Map(),meshes=[];
+  root.traverse(o=>{if(!o.isMesh)return;meshes.push(o);const clone=mat=>{if(!materials.has(mat)){const m=mat.clone();m.transparent=true;m.depthWrite=true;materials.set(mat,m);}return materials.get(mat);};o.material=Array.isArray(o.material)?o.material.map(clone):clone(o.material);});
+  root.updateMatrixWorld(true);this.objects.push({root,meshes,materials:[...materials.values()],box:new T.Box3().setFromObject(root).expandByScalar(.12),opacity:1,hold:0});
+ }
+ update(renderer,camera,body,landing,dt=.016){
+  this.faded=[];this.side.setFromMatrixColumn(camera.matrixWorld,0).multiplyScalar(.43);
+  const points=[body,body.clone().add(this.side),body.clone().sub(this.side),landing.clone().add(new T.Vector3(0,.22,0))];
+  for(const o of this.objects){let blocked=false;
+   if(o.root.visible&&this.enabled.value)for(const p of points){this.dir.copy(p).sub(camera.position);const distance=this.dir.length();this.ray.set(camera.position,this.dir.normalize());this.ray.far=Math.max(0,distance-.35);if(this.ray.ray.intersectsBox(o.box)&&this.ray.intersectObjects(o.meshes,false).some(h=>h.distance<this.ray.far)){blocked=true;break;}}
+   o.hold=blocked?.16:Math.max(0,o.hold-dt);const target=o.hold>0?.12:1;o.opacity+=(target-o.opacity)*(1-Math.exp(-dt*(blocked?18:7)));if(o.opacity>.995)o.opacity=1;
+   for(const m of o.materials){m.opacity=o.opacity;m.depthWrite=o.opacity>.98;}if(o.opacity<.98)this.faded.push(o.root.name||o.root.uuid);
+  }
  }
 }

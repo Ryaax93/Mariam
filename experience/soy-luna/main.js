@@ -5,15 +5,15 @@ import {MariamRig} from './character.js';
 import {LunaWorld} from './world.js';
 import {FollowCamera,SightCorridor} from './camera.js';
 import {LunaAudio} from './audio.js';
+import {bindControls} from './controls.js';
 const $=id=>document.getElementById(id), audio=new LunaAudio(),clock=new FixedClock();
 let renderer,scene,camera,world,avatar,follow,sight,session,mode='welcome',last=0,toastUntil=0,saveAt=0,portrait=false;
 let options={quality:'normal',music:true,soft:matchMedia('(prefers-reduced-motion: reduce)').matches},record=null,saved=null,storageOK=true;
-let stickId=null,stickX=0,stickY=0;const keys=new Set(),touch={jump:false,boost:false},held=new Map(),frames=[],errorMessages=[];
-const pointerElements=[$('stick'),$('jump'),$('boost')];
+let controls;const frames=[],errorMessages=[];
 try{const v=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(v?.version===1){saved=validateRun(v.run);if(v.options){options.quality=v.options.quality==='low'?'low':'normal';options.music=v.options.music!==false;options.soft=typeof v.options.soft==='boolean'?v.options.soft:options.soft;}if(Number.isFinite(v.record?.score)&&v.record.score>=0&&Number.isFinite(v.record?.time)&&v.record.time>=0)record=v.record;}}catch{storageOK=false;}
 function toast(text){$('toast').textContent=text;$('toast').classList.add('show');toastUntil=performance.now()+2600;}
-function clearInput(){keys.clear();stickX=stickY=0;touch.jump=touch.boost=false;stickId=null;held.clear();$('stick').firstElementChild.style.transform='';for(const el of pointerElements){el.classList.remove('pressed');} }
-function input(){return {forward:Math.max(-1,Math.min(1,-stickY+(keys.has('ArrowUp')||keys.has('KeyW')||keys.has('KeyZ')?1:0)-(keys.has('ArrowDown')||keys.has('KeyS')?1:0))),steer:Math.max(-1,Math.min(1,stickX+(keys.has('ArrowRight')||keys.has('KeyD')?1:0)-(keys.has('ArrowLeft')||keys.has('KeyA')||keys.has('KeyQ')?1:0))),jump:touch.jump||keys.has('Space'),boost:touch.boost||keys.has('ShiftLeft')||keys.has('ShiftRight')};}
+function clearInput(){controls?.clear();}
+function input(){return controls?.read()||{forward:0,steer:0,jump:false,boost:false};}
 function persist(){
  if(!session)return;
  if(['playing','pause'].includes(mode)&&['playing','paused'].includes(session.status)&&session.hp>0)saved=session.snapshot();
@@ -59,19 +59,14 @@ function checkOrientation(){
 function resize(){if(!renderer)return;camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setPixelRatio(Math.min(devicePixelRatio||1,options.quality==='low'?1:1.5));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=options.quality!=='low';}
 function fail(e){const message=e?.message||String(e);errorMessages.push(message);$('errorText').textContent='Le rendu 3D a rencontré un problème : '+message;$('error').hidden=false;$('loading').hidden=true;audio.stop();if(session)session.pause();clearInput();}
 function setupInput(){
- document.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','ShiftLeft','ShiftRight','KeyW','KeyA','KeyS','KeyD','KeyZ','KeyQ'].includes(e.code)&&mode==='playing'){e.preventDefault();keys.add(e.code);}if(e.code==='Escape')mode==='playing'?pause():mode==='pause'?resume():null;});
- document.addEventListener('keyup',e=>keys.delete(e.code));
- const stick=$('stick'),knob=stick.firstElementChild;
- function move(e){if(e.pointerId!==stickId||mode!=='playing')return;const r=stick.getBoundingClientRect(),x=(e.clientX-r.left-r.width/2)/(r.width*.38),y=(e.clientY-r.top-r.height/2)/(r.height*.38),n=Math.max(1,Math.hypot(x,y));stickX=x/n;stickY=y/n;knob.style.transform='translate('+stickX*r.width*.29+'px,'+stickY*r.height*.29+'px)';}
- stick.addEventListener('pointerdown',e=>{if(stickId!==null||mode!=='playing')return;e.preventDefault();stickId=e.pointerId;stick.setPointerCapture(e.pointerId);move(e);});stick.addEventListener('pointermove',move);
- const releaseStick=e=>{if(e.pointerId!==stickId)return;stickId=null;stickX=stickY=0;knob.style.transform='';};for(const name of ['pointerup','pointercancel','lostpointercapture'])stick.addEventListener(name,releaseStick);
- for(const name of ['jump','boost']){const b=$(name);b.addEventListener('pointerdown',e=>{if(mode!=='playing')return;e.preventDefault();held.set(e.pointerId,name);b.setPointerCapture(e.pointerId);touch[name]=true;b.classList.add('pressed');});for(const t of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(t,e=>{if(held.get(e.pointerId)!==name)return;held.delete(e.pointerId);touch[name]=[...held.values()].includes(name);b.classList.toggle('pressed',touch[name]);});}
+ controls=bindControls({stick:$('stick'),jump:$('jump'),boost:$('boost')},()=>mode==='playing'&&!portrait);
+ document.addEventListener('keydown',e=>{if(e.code==='Escape')mode==='playing'?pause():mode==='pause'?resume():null;});
  $('start').onclick=()=>start();$('continue').onclick=()=>start(true);$('pause').onclick=pause;$('resume').onclick=resume;$('restart').onclick=()=>start();$('again').onclick=()=>start();$('home').onclick=home;$('resultHome').onclick=home;
  $('music').checked=options.music;$('soft').checked=options.soft;$('quality').value=options.quality;
  $('music').onchange=e=>{options.music=e.target.checked;audio.setEnabled(options.music);persist();};$('soft').onchange=e=>{options.soft=e.target.checked;persist();};$('quality').onchange=e=>{options.quality=e.target.value;resize();persist();};
  window.addEventListener('blur',()=>{clearInput();pause();});
  document.addEventListener('visibilitychange',()=>{if(document.hidden){pause();persist();audio.suspend();}});
- window.addEventListener('pagehide',persist);window.addEventListener('resize',checkOrientation);
+ window.addEventListener('pagehide',persist);window.addEventListener('resize',()=>{clearInput();checkOrientation();});window.addEventListener('orientationchange',()=>{clearInput();pause();checkOrientation();});
 }
 const bodyPoint=new T.Vector3();let marker;
 function animate(now){
@@ -87,7 +82,7 @@ function animate(now){
  }else follow.update(dt,session,options.soft);
  world.update(mode==='pause'?0:dt,session,options.quality==='low');
  audio.tick(mode==='playing'&&!portrait,session.s/LENGTH);
- bodyPoint.set(p.x,p.y+1.2,p.z);sight.update(renderer,camera,bodyPoint,mode==='welcome'?bodyPoint:follow.landing);
+ bodyPoint.set(p.x,p.y+1.2,p.z);sight.update(renderer,camera,bodyPoint,mode==='welcome'?bodyPoint:follow.landing,dt);
  marker.visible=mode==='playing'&&!session.grounded&&session.y>0;
  marker.position.copy(follow.landing);
  $('notes').textContent='♫ '+session.notes.size+' / 12';$('hearts').textContent='♥ '.repeat(Math.max(0,session.hp)).trim();
@@ -99,8 +94,7 @@ function animate(now){
 try{
  renderer=new T.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;renderer.shadowMap.type=T.PCFSoftShadowMap;$('scene').append(renderer.domElement);
  scene=new T.Scene();camera=new T.PerspectiveCamera(48,innerWidth/innerHeight,.1,450);world=new LunaWorld(scene);avatar=new MariamRig();scene.add(avatar.root);follow=new FollowCamera(camera);sight=new SightCorridor();
- // Materials must not be shared with the track or obstacles when receiving the reveal shader.
- const clones=new Map();for(const group of [world.decor,world.detail]){group.traverse(o=>{if(!o.isMesh)return;if(!clones.has(o.material))clones.set(o.material,o.material.clone());o.material=clones.get(o.material);});sight.attach(group);}
+ for(const object of world.occluders)sight.attach(object);
  marker=new T.Mesh(new T.RingGeometry(.6,.67,28),new T.MeshBasicMaterial({color:0xfff2bf,transparent:true,opacity:.8,depthWrite:false}));marker.rotation.x=-Math.PI/2;scene.add(marker);
  session=new SkateSession(event);setupInput();ui('welcome');checkOrientation();$('loading').hidden=true;
  renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();pause();persist();fail(new Error('La mémoire graphique a été interrompue. Recharge pour reprendre au dernier repère.'));});
@@ -109,11 +103,11 @@ try{
  window.mariamLuna=()=>{
   const sorted=[...frames].sort((a,b)=>a-b),pick=q=>sorted[Math.floor((sorted.length-1)*q)]||0;
   const screen=point=>{const p=point.clone().project(camera);return {x:p.x,y:p.y,z:p.z};};
-  return {version:'luna-slice-1',mode,portrait,state:{s:session.s,lane:session.lane,y:session.y,v:session.v,vl:session.vl,vy:session.vy,grounded:session.grounded,status:session.status,time:session.time,elapsed:session.elapsed,hp:session.hp,notes:[...session.notes],passed:[...session.passed],checkpoint:session.checkpoint,score:session.score,falls:session.falls,hits:session.hits},input:input(),rig:avatar.stats,render:{calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,width:renderer.domElement.width,height:renderer.domElement.height},camera:{body:screen(bodyPoint),landing:screen(follow.landing),position:camera.position.toArray()},performance:{frames:frames.length,p50:pick(.5),p95:pick(.95),fps:frames.length?1000/(frames.reduce((a,b)=>a+b,0)/frames.length):0,droppedSimulation:clock.dropped},save:!!saved,storageOK,audio:{state:audio.ctx?.state||'locked',enabled:audio.enabled,notes:audio.nodes.size,steps:audio.step},errors:[...errorMessages]};
+  return {version:'luna-v2',mode,portrait,state:{s:session.s,lane:session.lane,y:session.y,v:session.v,vl:session.vl,vy:session.vy,grounded:session.grounded,status:session.status,time:session.time,elapsed:session.elapsed,hp:session.hp,notes:[...session.notes],passed:[...session.passed],checkpoint:session.checkpoint,score:session.score,falls:session.falls,hits:session.hits},input:input(),contacts:controls.diagnostics(),rig:avatar.stats,render:{calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,width:renderer.domElement.width,height:renderer.domElement.height},camera:{body:screen(bodyPoint),landing:screen(follow.landing),position:camera.position.toArray(),faded:sight.faded},performance:{frames:frames.length,p50:pick(.5),p95:pick(.95),fps:frames.length?1000/(frames.reduce((a,b)=>a+b,0)/frames.length):0,droppedSimulation:clock.dropped},save:!!saved,storageOK,audio:{state:audio.ctx?.state||'locked',enabled:audio.enabled,notes:audio.nodes.size,steps:audio.step},errors:[...errorMessages]};
  };
  // Explicit camera regression fixture, only when requested in a test URL.
  if(new URLSearchParams(location.search).has('camera-test')){
-  const obstacle=new T.Mesh(new T.TorusGeometry(2.7,.6,12,60),new T.MeshStandardMaterial({color:0xc05e99,roughness:.5}));obstacle.position.set(2.7,2,3.5);scene.add(obstacle);sight.attach(obstacle);sight.enabled.value=new URLSearchParams(location.search).get('camera-test')==='before'?0:1;
+  const obstacle=new T.Mesh(new T.TorusGeometry(2.7,.6,12,60),new T.MeshStandardMaterial({color:0xc05e99,roughness:.5}));obstacle.position.set(2.7,2,3.5);scene.add(obstacle);obstacle.userData.cameraOccluder=true;obstacle.name='Décor de contrôle';sight.attach(obstacle);sight.enabled.value=new URLSearchParams(location.search).get('camera-test')==='before'?0:1;
  }
  requestAnimationFrame(animate);
 }catch(e){fail(e);}

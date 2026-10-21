@@ -1,4 +1,5 @@
 import * as T from '../vendor/three.module.js';
+import {finishShop,dressWorld} from './environment-assets.js';
 import {center,width,floor,LENGTH,GATES,OBSTACLES,worldPoint} from './track.js';
 const V=(x,y,z)=>new T.Vector3(x,y,z);
 function tex(w,h,paint){const c=document.createElement('canvas');c.width=w;c.height=h;paint(c.getContext('2d'),w,h);const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;return t;}
@@ -11,8 +12,8 @@ function merge(list){
 }
 export class LunaWorld{
  constructor(scene){
-  this.scene=scene;this.decor=new T.Group();this.play=new T.Group();this.detail=new T.Group();scene.add(this.decor,this.play,this.detail);this.materials=new Map();this.gates=[];this.wheel=new T.Group();this.booths=[];this.flags=[];this.leaves=[];this.time=0;this.chunks=[];this.random=rng(104);
-  this.sky();this.ground();this.course();this.town();this.ferris();this.musicGates();this.checkpoints();this.batch(this.wheel);this.batch(this.play);this.batch(this.decor);this.batch(this.detail);
+  this.scene=scene;this.decor=new T.Group();this.play=new T.Group();this.detail=new T.Group();scene.add(this.decor,this.play,this.detail);this.materials=new Map();this.gates=[];this.wheel=new T.Group();this.booths=[];this.flags=[];this.leaves=[];this.time=0;this.chunks=[];this.occluders=[];this.random=rng(104);
+  this.sky();this.ground();this.course();this.town();this.ferris();this.musicGates();this.checkpoints();dressWorld(this);this.batch(this.wheel);this.batch(this.play);this.batch(this.decor);this.batch(this.detail);
  }
  mat(color,rough=.7){const key=color+':'+rough;if(!this.materials.has(key))this.materials.set(key,new T.MeshStandardMaterial({color,roughness:rough,metalness:rough<.4?.15:.02}));return this.materials.get(key);}
  mesh(geo,color,x=0,y=0,z=0,sx=1,sy=sx,sz=sx,parent=this.decor,rough=.7){const m=new T.Mesh(geo,this.mat(color,rough));m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;}
@@ -20,18 +21,22 @@ export class LunaWorld{
  ball(c,x,y,z,rx,ry=rx,rz=rx,parent=this.decor){return this.mesh(new T.SphereGeometry(1,12,8),c,x,y,z,rx,ry,rz,parent);}
  pipe(c,points,r=.04,parent=this.decor){return this.mesh(curve(points,r),c,0,0,0,1,1,1,parent);}
  sky(){
-  const sky=new T.Mesh(new T.SphereGeometry(420,24,12),new T.ShaderMaterial({side:T.BackSide,depthWrite:false,uniforms:{top:{value:new T.Color(0x7e88bb)},bottom:{value:new T.Color(0xf9d4b2)}},vertexShader:'varying vec3 p; void main(){p=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',fragmentShader:'varying vec3 p; uniform vec3 top; uniform vec3 bottom; void main(){float h=clamp(normalize(p).y,0.0,1.0); vec3 c=mix(bottom,top,pow(h,.6));float sun=pow(max(dot(normalize(p),normalize(vec3(-.65,.3,-1.0))),0.0),500.0);gl_FragColor=vec4(c+sun*vec3(.8,.55,.25),1.0);}' }));this.scene.add(sky);
-  this.scene.fog=new T.Fog(0xf1c8b9,45,145);this.scene.add(new T.HemisphereLight(0xffe7cf,0x766580,1.7));
-  const sun=new T.DirectionalLight(0xffdab0,2.2);sun.position.set(-15,25,16);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-18;sun.shadow.camera.right=18;sun.shadow.camera.top=22;sun.shadow.camera.bottom=-18;sun.shadow.normalBias=.045;sun.shadow.bias=-.0004;this.scene.add(sun,sun.target);this.sun=sun;
+  const sky=new T.Mesh(new T.SphereGeometry(420,24,12),new T.ShaderMaterial({side:T.BackSide,depthWrite:false,uniforms:{top:{value:new T.Color(0x7e88bb)},bottom:{value:new T.Color(0xf9d4b2)}},vertexShader:'varying vec3 p; void main(){p=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',fragmentShader:'varying vec3 p; uniform vec3 top; uniform vec3 bottom; void main(){float h=clamp(normalize(p).y,0.0,1.0); vec3 c=mix(bottom,top,pow(h,.6));float sun=pow(max(dot(normalize(p),normalize(vec3(-.65,.3,-1.0))),0.0),500.0);gl_FragColor=vec4(c+sun*vec3(.8,.55,.25),1.0);\n#include <tonemapping_fragment>\n#include <colorspace_fragment>\n}' }));this.scene.add(sky);
+  this.scene.fog=new T.Fog(0xf1c8c0,55,160);this.scene.add(new T.HemisphereLight(0xffe7cf,0x728eaa,1.55));
+  const sun=new T.DirectionalLight(0xffe3c3,2.55);sun.position.set(-15,25,16);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-18;sun.shadow.camera.right=18;sun.shadow.camera.top=22;sun.shadow.camera.bottom=-18;sun.shadow.normalBias=.045;sun.shadow.bias=-.0004;this.scene.add(sun,sun.target);this.sun=sun;
  }
  ground(){
-  const water=new T.Mesh(new T.PlaneGeometry(220,440,1,1),new T.MeshStandardMaterial({color:0x779ea4,roughness:.3,metalness:.22}));water.rotation.x=-Math.PI/2;water.position.set(0,-1.15,-100);this.scene.add(water);
-  for(let j=0;j<22;j++){const x=(this.random()-.5)*155,z=-this.random()*260;this.ball(0xb8a4b1,x,-4,z,8+this.random()*14,6,9);}
+  // V1 random ellipsoids reached y=+2 and crossed the track. Landscape is now below or outside it.
+  const water=new T.Mesh(new T.PlaneGeometry(900,900),new T.MeshStandardMaterial({color:0x7eb9bc,roughness:.26,metalness:.28}));water.rotation.x=-Math.PI/2;water.position.set(0,-1.7,-100);this.scene.add(water);
+  const p=[],ix=[];for(const side of [-1,1])for(let s=-8;s<235;s+=2){const n=p.length/3;for(const [q,l] of [[s,width(s)+1.2],[s,18],[s+2,width(s+2)+1.2],[s+2,18]])p.push(center(q)+side*l,-.65-Math.max(0,l-11)*.11,-q);ix.push(n,n+2,n+1,n+1,n+2,n+3);}
+  const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(p,3));geo.setIndex(ix);geo.computeVertexNormals();const m=this.mesh(geo,0x82a996);m.material.side=T.DoubleSide;m.castShadow=false;
+  for(let j=0;j<12;j++)this.ball(j%2?0xa0bdaf:0xb3c5b5,(j%2?1:-1)*(48+j%3*16),-5,30-j*24,12+j%4,7+j%3,18);
+  for(let j=0;j<26;j++){const s=j*10;const m=this.box(0xb8d4cc,center(s)+(j%2?1:-1)*(21+j%5),-1.68,-s,3+j%3,.012,.035);m.castShadow=false;}
  }
  course(){
   const texture=tex(256,256,(c,w,h)=>{c.fillStyle='#eee0cf';c.fillRect(0,0,w,h);for(let i=0;i<1800;i++){const x=this.random()*w,y=this.random()*h;c.fillStyle=['#d8bcb7','#f9ead8','#d3c5bb','#bdb3b5'][i%4];c.beginPath();c.moveTo(x,y);c.lineTo(x+this.random()*3+1,y);c.lineTo(x,y+this.random()*4+1);c.fill();}});
   texture.wrapS=texture.wrapT=T.RepeatWrapping;texture.repeat.set(2,30);
-  const mats=[new T.MeshStandardMaterial({color:0xc37d9b,roughness:.38,metalness:.08}),new T.MeshStandardMaterial({map:texture,color:0xfff7e6,roughness:.76})];
+  const mats=[new T.MeshStandardMaterial({color:0xd4789c,roughness:.43,metalness:.05}),new T.MeshStandardMaterial({map:texture,color:0xfff7e6,roughness:.76})];
   const surfaces=[[],[]],indices=[[],[]],uvs=[[],[]];
   for(let s=-5;s<LENGTH+8;s+=.5){
    const a=Math.max(0,s),b=Math.min(LENGTH,s+.5),w=width(a),lanes=[-w-1.2,-w,-2.4,0,2.4,w,w+1.2];
@@ -67,7 +72,7 @@ export class LunaWorld{
   const m=new T.Mesh(new T.PlaneGeometry(w,w/4),new T.MeshStandardMaterial({map:texture,roughness:.7,side:T.DoubleSide}));m.position.set(x,y,z);parent.add(m);return m;
  }
  shop(s,side,color,name){
-  const x=center(s)+side*11,z=-s,g=new T.Group();g.position.set(x,0,z);g.rotation.y=-side*Math.PI*.36;this.decor.add(g);
+  const x=center(s)+side*14.6,z=-s,g=new T.Group();g.position.set(x,0,z);g.rotation.y=-side*Math.PI*.36;this.decor.add(g);g.name=name;g.userData.dynamic=true;g.userData.cameraOccluder=true;
   this.box(color,0,2.3,0,6.2,4.6,4.8,g);this.box(0xffedd7,0,.18,2.6,6.8,.36,1.4,g);this.box(0xe7c6b2,0,4.5,0,6.55,.25,5.1,g);
   for(const xx of [-1.8,0,1.8]){
    this.box(0x7b889a,xx,1.7,2.415,1.42,2.7,.035,g);
@@ -82,7 +87,7 @@ export class LunaWorld{
    this.mesh(new T.SphereGeometry(.3,10,6,0,Math.PI*2,0,Math.PI/2),c,-2.7+j*.6,3.15,3.74,1,.5,.35,g).rotation.z=Math.PI;
   }
   for(const side of [-1,1]){this.box(0xffe9d3,side*3,2.25,2.45,.24,4.5,.22,g);this.mesh(new T.ConeGeometry(.42,.38,4),0xe4b29a,side*3,4.7,2.45,1,1,1,g).rotation.y=Math.PI/4;}
-  this.pipe(0xe4c7ad,[[-3.2,4.58,2.5],[-1.8,4.64,2.5],[0,5,2.5],[1.8,4.64,2.5],[3.2,4.58,2.5]],.1,g);this.sign(name,0,3.9,2.46,4.6,g);
+  this.pipe(0xe4c7ad,[[-3.2,4.58,2.5],[-1.8,4.64,2.5],[0,5,2.5],[1.8,4.64,2.5],[3.2,4.58,2.5]],.1,g);this.sign(name,0,3.9,2.46,4.6,g);finishShop(this,g,color);
  }
  palm(x,z,h=5){
   this.pipe(0xaf8b6f,[[x,0,z],[x+.15,h*.4,z],[x+.4,h*.8,z],[x+.5,h,z]],.12);
@@ -96,8 +101,8 @@ export class LunaWorld{
  }
  town(){
   const names=['Les patins roses','Bisous & limonade','Le petit atelier','Un tour avec toi'];
-  for(let i=0;i<8;i++)this.shop(16+i*27,i%2?1:-1,[0xc98e98,0x98b2aa,0xd5b292,0xa99cba][i%4],names[i%4]);
-  for(let i=0;i<24;i++){const s=i*10,side=i%2?1:-1;this.palm(center(s)+side*(8+this.random()*6),-s-3,4.5+this.random()*2);}
+  for(let i=0;i<6;i++)this.shop(16+i*36,i%2?1:-1,[0xc98e98,0x98b2aa,0xd5b292,0xa99cba][i%4],names[i%4]);
+  for(let i=0;i<24;i++){const s=i*10,side=i%2?1:-1;this.palm(center(s)+side*(10.8+this.random()*3),-s-3,4.5+this.random()*2);}
   // Low flower beds and benches enrich the promenade without covering the route.
   for(let i=0;i<34;i++){
    const s=i*6.5,side=i%2?1:-1,x=center(s)+side*8,z=-s;
@@ -111,7 +116,7 @@ export class LunaWorld{
    this.pipe(0x9b7b79,pts,.018);
    for(let j=1;j<12;j++){const p=pts[j];this.ball(j%2?0xffdaa2:0xdfa1b6,p[0],p[1]-.12,p[2],.1,.14,.1);}
   }
-  this.sign('LES JARDINS DE LUNA',0,4.7,2.5,7);
+  this.sign('LES JARDINS DE LUNA',-8,3.7,-1,5).rotation.y=.38;
   this.sign('POUR MARIAM, TOUJOURS',center(218),3.5,-223,7);
  }
  ferris(){
@@ -141,15 +146,15 @@ export class LunaWorld{
  batch(root){
   root.updateMatrixWorld(true);const groups=new Map(),remove=[],inverse=new T.Matrix4().copy(root.matrixWorld).invert();
   const partition=root===this.decor||root===this.detail;
-  root.traverse(m=>{if(!m.isMesh||m.material.map)return;for(let p=m.parent;p&&p!==root;p=p.parent)if(p.userData.dynamic)return;if(root!==this.wheel&&this.wheel.getObjectById(m.id))return;
+  root.traverse(m=>{if(!m.isMesh||m.userData.dynamic)return;for(let p=m.parent;p&&p!==root;p=p.parent)if(p.userData.dynamic)return;if(root!==this.wheel&&this.wheel.getObjectById(m.id))return;
    const g=m.geometry.clone();g.applyMatrix4(new T.Matrix4().multiplyMatrices(inverse,m.matrixWorld));g.computeBoundingBox();const z=g.boundingBox.getCenter(new T.Vector3()).z,zone=partition?Math.floor(z/24):0,key=m.material.uuid+':'+zone;
    if(!groups.has(key))groups.set(key,{mat:m.material,geos:[],zone});groups.get(key).geos.push(g);remove.push(m);
   });
   remove.forEach(m=>{m.removeFromParent();m.geometry.dispose();});
-  for(const {mat,geos,zone} of groups.values()){const m=new T.Mesh(merge(geos),mat);m.receiveShadow=true;m.castShadow=true;root.add(m);if(partition)this.chunks.push({mesh:m,z:zone*24+12});geos.forEach(g=>g.dispose());}
+  for(const {mat,geos,zone} of groups.values()){const m=new T.Mesh(merge(geos),mat);m.receiveShadow=true;m.castShadow=true;root.add(m);if(partition){m.geometry.computeBoundingBox();this.chunks.push({mesh:m,min:m.geometry.boundingBox.min.z,max:m.geometry.boundingBox.max.z});}geos.forEach(g=>g.dispose());}
  }
  update(dt,s,low=false){
-  this.time+=dt;for(const c of this.chunks)c.mesh.visible=Math.abs(c.z+s.s)<(low?66:96);this.detail.visible=!low;this.sun.castShadow=!low;
+  this.time+=dt;for(const c of this.chunks)c.mesh.visible=c.max>-s.s-(low?100:150)&&c.min<-s.s+35;for(const o of this.occluders)o.visible=Math.abs(o.position.z+s.s)<(low?100:150);for(const b of this.banners)b.rotation.z=Math.sin(this.time*1.4+b.position.z)*.055;this.detail.visible=!low;this.sun.castShadow=!low;
   this.sun.position.set(center(s.s)-15,25,-s.s+16);this.sun.target.position.set(center(s.s),0,-s.s-10);
   this.wheel.rotation.z=this.time*.035;
   for(const b of this.booths){const a=b.userData.angle;b.position.set(Math.cos(a)*8,Math.sin(a)*8,0);b.rotation.z=-this.wheel.rotation.z;}
