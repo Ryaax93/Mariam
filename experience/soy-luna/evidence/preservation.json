@@ -1,0 +1,18 @@
+{
+  "foundation": "377ad0c71c2939d7e22654b0b1cab4993344ae66",
+  "runtimeHead": "8ea9ba73ac5793451432eac2a064e6e2c30a58ee",
+  "existingTrackedFilesChanged": [],
+  "originalRootBlob": "843ea7b2fbc108db40ddbecb384cadfdb2ae547f",
+  "runtimeSha256": {
+    "experience/soy-luna/audio.js": "3d71a373997c0bf7c3e9d698b8becad3b719bdbcfc8e4dec1722c00f79ca0105",
+    "experience/soy-luna/camera.js": "d69350604ea047038c20b3bc81f3e2e7b5cd7db736bd7da24ab9bb75413ba849",
+    "experience/soy-luna/character.js": "2f424739d52d059c3dc90facfa05f47a572bbdac94e5ad710cec9efc7656650b",
+    "experience/soy-luna/index.html": "e2fdc7014a9a2bb7d2c02af1dcdf554ede960e1b8652c4d56e64283fa84b4284",
+    "experience/soy-luna/main.js": "5ba2edfc5cd48eb9834082cc859fdc230583346dfa928460fc13a39eeee62cb1",
+    "experience/soy-luna/manifest.webmanifest": "b85edf3e2433580629051deb6afbb79da985d90db39667943bc838162cb10a0c",
+    "experience/soy-luna/simulation.js": "763cfca2c8b0d146a03bd7b82c6c24829633d743b8d5c7513b89b70b5cbb6865",
+    "experience/soy-luna/style.css": "3074ec3e02bf4de5e5161ee1054d77378032fa6bd174430e76a98566388b5067",
+    "experience/soy-luna/track.js": "9057a056b9023f3f1847aaf43e11412112302857783c09d914a30ef5e0642cd2",
+    "experience/soy-luna/world.js": "20f34af660afddbfce16b2cb760fd8de258ea836cbf76419c9aa42d67aadd525"
+  }
+}

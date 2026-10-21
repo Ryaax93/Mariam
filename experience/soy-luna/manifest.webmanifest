@@ -1,0 +1,17 @@
+{
+  "name": "Mariam — Les jardins de Luna",
+  "short_name": "Mariam",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#e8c5b6",
+  "theme_color": "#e6b6ad",
+  "icons": [
+    {
+      "src": "../assets/heart.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ]
+}

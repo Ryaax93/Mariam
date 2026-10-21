@@ -1,0 +1,456 @@
+{
+  "source": "3506ea19ce2e2c658bfbf98c721e373f4c387488",
+  "platform": "linux",
+  "note": "Linux browsers / software GPU, not physical iPhone Safari",
+  "checks": [
+    {
+      "name": "boot WebGL",
+      "pass": true
+    },
+    {
+      "name": "forward movement",
+      "pass": true,
+      "details": {
+        "version": "luna-slice-1",
+        "mode": "playing",
+        "portrait": false,
+        "state": {
+          "s": 5.389805771474228,
+          "lane": 0,
+          "y": 0,
+          "v": 7.046698242511495,
+          "vl": 0,
+          "vy": 0,
+          "grounded": true,
+          "status": "playing",
+          "time": 1.0916666666666652,
+          "elapsed": 1.8141999999999971,
+          "hp": 3,
+          "notes": [],
+          "passed": [],
+          "checkpoint": 0,
+          "score": 0,
+          "falls": 0,
+          "hits": 0
+        },
+        "input": {
+          "forward": 0,
+          "steer": 0,
+          "jump": false,
+          "boost": false
+        },
+        "rig": {
+          "bones": 20,
+          "skinnedMeshes": 10,
+          "triangles": 23940,
+          "status": "reference-fidelity-unvalidated"
+        },
+        "render": {
+          "calls": 188,
+          "triangles": 94516,
+          "geometries": 194,
+          "textures": 14,
+          "width": 852,
+          "height": 393
+        },
+        "camera": {
+          "body": {
+            "x": -0.001979269605150779,
+            "y": -0.06552316435670713,
+            "z": 0.9809623408056304
+          },
+          "landing": {
+            "x": 0.00006011873099696038,
+            "y": -0.0432527419310929,
+            "z": 0.9864859088896282
+          },
+          "position": [
+            -0.3750449538397111,
+            4.5,
+            4.305417110347051
+          ]
+        },
+        "performance": {
+          "frames": 5,
+          "p50": 264.29999999999745,
+          "p95": 566.6999999999998,
+          "fps": 2.7560357182229125,
+          "droppedSimulation": 0.7142999999999975
+        },
+        "save": true,
+        "storageOK": true,
+        "audio": {
+          "state": "running",
+          "enabled": true,
+          "notes": 1,
+          "steps": 4
+        },
+        "errors": []
+      }
+    },
+    {
+      "name": "rig is skinned",
+      "pass": true
+    },
+    {
+      "name": "original soundtrack scheduled after gesture",
+      "pass": true,
+      "details": {
+        "state": "running",
+        "enabled": true,
+        "notes": 1,
+        "steps": 4
+      }
+    },
+    {
+      "name": "jump above ground",
+      "pass": true,
+      "details": {
+        "s": 8.463156805857011,
+        "lane": 0,
+        "y": 1.0895833333333345,
+        "v": 5.352475545790095,
+        "vl": 0,
+        "vy": -1.999999999999997,
+        "grounded": false,
+        "status": "playing",
+        "time": 1.5916666666666635,
+        "elapsed": 3.3640999999999965,
+        "hp": 3,
+        "notes": [],
+        "passed": [],
+        "checkpoint": 0,
+        "score": 0,
+        "falls": 0,
+        "hits": 0
+      }
+    },
+    {
+      "name": "pause freezes simulation",
+      "pass": true
+    },
+    {
+      "name": "two-finger steering and jump",
+      "pass": true
+    },
+    {
+      "name": "touch cancel clears input",
+      "pass": true
+    },
+    {
+      "name": "continue offered after reload",
+      "pass": true
+    },
+    {
+      "name": "reload resumes checkpoint and collected notes",
+      "pass": true
+    },
+    {
+      "name": "steering off edge charges exactly one heart",
+      "pass": true
+    },
+    {
+      "name": "fall returns to checkpoint with camera",
+      "pass": true
+    },
+    {
+      "name": "checkpoint reload and fall exercised",
+      "pass": true
+    },
+    {
+      "name": "full course won by keyboard events",
+      "pass": true,
+      "details": {
+        "s": 220.03156111185794,
+        "lane": -0.017114704812270974,
+        "y": 0,
+        "v": 7.599999999894453,
+        "vl": 2.5551977442815734e-7,
+        "vy": 0,
+        "grounded": true,
+        "status": "won",
+        "time": 40.17499999999836,
+        "elapsed": 40.4365000000001,
+        "hp": 1,
+        "notes": [
+          0,
+          1,
+          2,
+          3,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "passed": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "checkpoint": 144,
+        "score": 2673,
+        "falls": 2,
+        "hits": 2
+      }
+    },
+    {
+      "name": "course collects notes",
+      "pass": true
+    },
+    {
+      "name": "three legacy save strings unchanged",
+      "pass": true
+    },
+    {
+      "name": "no overflow 667x375",
+      "pass": true
+    },
+    {
+      "name": "rotate message 667x375",
+      "pass": true
+    },
+    {
+      "name": "no overflow 932x430",
+      "pass": true
+    },
+    {
+      "name": "rotate message 932x430",
+      "pass": true
+    },
+    {
+      "name": "no overflow 393x852",
+      "pass": true
+    },
+    {
+      "name": "rotate message 393x852",
+      "pass": true
+    },
+    {
+      "name": "body and landing framed",
+      "pass": true
+    },
+    {
+      "name": "WebKit Linux movement",
+      "pass": true,
+      "details": []
+    },
+    {
+      "name": "no Chromium JavaScript / shader errors",
+      "pass": true,
+      "details": []
+    }
+  ],
+  "errors": [],
+  "captures": [
+    "welcome.jpg",
+    "skating.jpg",
+    "checkpoint-74.jpg",
+    "checkpoint-144.jpg",
+    "respawn-144.jpg",
+    "finish.jpg",
+    "viewport-667x375.jpg",
+    "viewport-932x430.jpg",
+    "viewport-393x852.jpg",
+    "camera-before.jpg",
+    "camera-after.jpg",
+    "character-front.jpg",
+    "character-profile.jpg",
+    "character-back.jpg",
+    "webkit-linux.jpg"
+  ],
+  "measurements": [
+    {
+      "scenario": "full-course-low",
+      "version": "luna-slice-1",
+      "mode": "result",
+      "portrait": false,
+      "state": {
+        "s": 220.03156111185794,
+        "lane": -0.017114704812270974,
+        "y": 0,
+        "v": 7.599999999894453,
+        "vl": 2.5551977442815734e-7,
+        "vy": 0,
+        "grounded": true,
+        "status": "won",
+        "time": 40.17499999999836,
+        "elapsed": 40.4365000000001,
+        "hp": 1,
+        "notes": [
+          0,
+          1,
+          2,
+          3,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "passed": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "checkpoint": 144,
+        "score": 2673,
+        "falls": 2,
+        "hits": 2
+      },
+      "input": {
+        "forward": 0,
+        "steer": 0,
+        "jump": false,
+        "boost": false
+      },
+      "rig": {
+        "bones": 20,
+        "skinnedMeshes": 10,
+        "triangles": 23940,
+        "status": "reference-fidelity-unvalidated"
+      },
+      "render": {
+        "calls": 37,
+        "triangles": 45120,
+        "geometries": 285,
+        "textures": 12,
+        "width": 852,
+        "height": 393
+      },
+      "camera": {
+        "body": {
+          "x": 0.0014420252274627173,
+          "y": -0.13152107017757753,
+          "z": 0.9806439089224185
+        },
+        "landing": {
+          "x": -0.00007828799142421286,
+          "y": -0.0819691122236458,
+          "z": 0.9867772155047045
+        },
+        "position": [
+          1.0039246686993795,
+          4.5,
+          -210.91677974286344
+        ]
+      },
+      "performance": {
+        "frames": 273,
+        "p50": 100,
+        "p95": 199.89999999999964,
+        "fps": 9.707736674975731,
+        "droppedSimulation": 0.25
+      },
+      "save": false,
+      "storageOK": true,
+      "audio": {
+        "state": "running",
+        "enabled": true,
+        "notes": 5,
+        "steps": 99
+      },
+      "errors": []
+    },
+    {
+      "scenario": "camera-fixture",
+      "version": "luna-slice-1",
+      "mode": "pause",
+      "portrait": false,
+      "state": {
+        "s": 0,
+        "lane": 0,
+        "y": 0,
+        "v": 0,
+        "vl": 0,
+        "vy": 0,
+        "grounded": true,
+        "status": "paused",
+        "time": 0.7916666666666663,
+        "elapsed": 0.9088000000000234,
+        "hp": 3,
+        "notes": [],
+        "passed": [],
+        "checkpoint": 0,
+        "score": 0,
+        "falls": 0,
+        "hits": 0
+      },
+      "input": {
+        "forward": 0,
+        "steer": 0,
+        "jump": false,
+        "boost": false
+      },
+      "rig": {
+        "bones": 20,
+        "skinnedMeshes": 10,
+        "triangles": 23940,
+        "status": "reference-fidelity-unvalidated"
+      },
+      "render": {
+        "calls": 157,
+        "triangles": 76292,
+        "geometries": 157,
+        "textures": 13,
+        "width": 852,
+        "height": 393
+      },
+      "camera": {
+        "body": {
+          "x": 0.00040628498822603993,
+          "y": -0.13055381922227102,
+          "z": 0.9767848796100931
+        },
+        "landing": {
+          "x": -6.153774181086384e-18,
+          "y": -0.1122930066325971,
+          "z": 0.9833204333382782
+        },
+        "position": [
+          -0.6081004648975151,
+          4.5,
+          7.776259629448558
+        ]
+      },
+      "performance": {
+        "frames": 8,
+        "p50": 16.699999999999818,
+        "p95": 300,
+        "fps": 8.802816901408224,
+        "droppedSimulation": 0.11670000000000025
+      },
+      "save": true,
+      "storageOK": true,
+      "audio": {
+        "state": "running",
+        "enabled": true,
+        "notes": 0,
+        "steps": 4
+      },
+      "errors": []
+    }
+  ]
+}
