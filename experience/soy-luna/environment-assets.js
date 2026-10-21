@@ -40,9 +40,13 @@ export function dressWorld(w){
   for(let k=0;k<5;k++){const a=k*Math.PI*.4,petal=w.ball(i%3?0xeaa4b5:0xf6d5b2,x+Math.cos(a)*.115,.68,z+Math.sin(a)*.115,.15,.055,.09,w.detail);petal.rotation.y=-a;petal.rotation.z=Math.cos(a)*.32;}
   w.ball(0xd6a159,x,.7,z,.06,.07,.06,w.detail);
  }
+ // Instanced, shaped lance leaves give the beds a planted silhouette at two draw calls.
+ const lp=[],li=[];for(let i=0;i<=8;i++){const t=i/8,half=Math.sin(Math.PI*t)*.13;lp.push(-half,t*.7,Math.sin(t*Math.PI)*.12,0,t*.7+.035,Math.sin(t*Math.PI)*.16,half,t*.7,Math.sin(t*Math.PI)*.12);if(i<8){const a=i*3;li.push(a,a+3,a+1,a+1,a+3,a+4,a+1,a+4,a+2,a+2,a+4,a+5);}}
+ const leafGeo=new T.BufferGeometry();leafGeo.setAttribute('position',new T.Float32BufferAttribute(lp,3));leafGeo.setIndex(li);leafGeo.computeVertexNormals();
+ for(const shade of [0x52896e,0x7ca185]){const leaves=new T.InstancedMesh(leafGeo,new T.MeshStandardMaterial({color:shade,side:T.DoubleSide,roughness:.75}),168),dummy=new T.Object3D();let n=0;for(let i=0;i<28;i++){const s=i*8,side=i%2?1:-1;for(let k=0;k<6;k++){const a=k*Math.PI/3+i*.3;dummy.position.set(center(s)+side*(8.3+w.random()*.7),.13,-s+(w.random()-.5));dummy.rotation.set(.3+w.random()*.7,a,side*.1);dummy.scale.setScalar(.65+w.random()*.7);dummy.updateMatrix();leaves.setMatrixAt(n++,dummy.matrix);}}leaves.castShadow=false;leaves.receiveShadow=true;w.decor.add(leaves);}
  for(const s of [23,76,145,202])for(let k=0;k<7;k++){
   const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute([0,0,0,0,0,.48,0,-.56,.24],3));geo.computeVertexNormals();const flag=w.mesh(geo,k%2?0xdda2b4:0xefd4a1,center(s)-9.2,2.6-Math.sin(k/6*Math.PI)*.3,-s+k*.65);flag.material.side=T.DoubleSide;flag.userData.dynamic=true;w.banners.push(flag);
  }
  for(let s=1;s<LENGTH;s+=2.5)for(const side of [-1,1])w.box(0xcbb7a7,center(s)+side*(width(s)+.6),-.01,-s,1.18,.009,.025,w.play);
- for(const [s,label] of [[8,'01 · LA PROMENADE'],[78,'02 · LE BAL DES ROLLERS'],[148,'03 · SOUS LES ÉTOILES']])w.sign(label,center(s)-4.2,1.4,-s,2.7).rotation.y=.18;
+ for(const [s,label] of [[8,'01 · LA PROMENADE'],[78,'02 · LE BAL DES ROLLERS'],[148,'03 · SOUS LES ÉTOILES']])w.sign(label,center(s)-8.1,1.4,-s,2.7).rotation.y=.18;
 }

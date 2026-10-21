@@ -22,8 +22,8 @@ export class LunaWorld{
  ball(c,x,y,z,rx,ry=rx,rz=rx,parent=this.decor){return this.mesh(new T.SphereGeometry(1,12,8),c,x,y,z,rx,ry,rz,parent);}
  pipe(c,points,r=.04,parent=this.decor){return this.mesh(curve(points,r),c,0,0,0,1,1,1,parent);}
  sky(){
-  const sky=new T.Mesh(new T.SphereGeometry(420,24,12),new T.ShaderMaterial({side:T.BackSide,depthWrite:false,uniforms:{top:{value:new T.Color(0x7e88bb)},bottom:{value:new T.Color(0xf9d4b2)}},vertexShader:'varying vec3 p; void main(){p=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',fragmentShader:'varying vec3 p; uniform vec3 top; uniform vec3 bottom; void main(){float h=clamp(normalize(p).y,0.0,1.0); vec3 c=mix(bottom,top,pow(h,.6));float sun=pow(max(dot(normalize(p),normalize(vec3(-.65,.3,-1.0))),0.0),500.0);gl_FragColor=vec4(c+sun*vec3(.8,.55,.25),1.0);\n#include <tonemapping_fragment>\n#include <colorspace_fragment>\n}' }));this.scene.add(sky);
-  this.scene.fog=new T.Fog(0xf1c8c0,55,160);this.scene.add(new T.HemisphereLight(0xffe7cf,0x728eaa,1.55));
+  const sky=new T.Mesh(new T.SphereGeometry(420,24,12),new T.ShaderMaterial({side:T.BackSide,depthWrite:false,uniforms:{top:{value:new T.Color(0x6f8fc5)},bottom:{value:new T.Color(0xefb8ce)}},vertexShader:'varying vec3 p; void main(){p=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',fragmentShader:'varying vec3 p; uniform vec3 top; uniform vec3 bottom; void main(){float h=clamp(normalize(p).y,0.0,1.0); vec3 c=mix(bottom,top,pow(h,.6));float sun=pow(max(dot(normalize(p),normalize(vec3(-.65,.3,-1.0))),0.0),500.0);gl_FragColor=vec4(c+sun*vec3(.8,.55,.25),1.0);\n#include <tonemapping_fragment>\n#include <colorspace_fragment>\n}' }));this.scene.add(sky);
+  this.scene.fog=new T.Fog(0xe5c3d0,55,160);this.scene.add(new T.HemisphereLight(0xffe7cf,0x728eaa,1.55));
   const sun=new T.DirectionalLight(0xffe3c3,2.55);sun.position.set(-15,25,16);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-18;sun.shadow.camera.right=18;sun.shadow.camera.top=22;sun.shadow.camera.bottom=-18;sun.shadow.normalBias=.045;sun.shadow.bias=-.0004;this.scene.add(sun,sun.target);this.sun=sun;
  }
  ground(){
@@ -37,7 +37,8 @@ export class LunaWorld{
  course(){
   const texture=tex(256,256,(c,w,h)=>{c.fillStyle='#eee0cf';c.fillRect(0,0,w,h);for(let i=0;i<1800;i++){const x=this.random()*w,y=this.random()*h;c.fillStyle=['#d8bcb7','#f9ead8','#d3c5bb','#bdb3b5'][i%4];c.beginPath();c.moveTo(x,y);c.lineTo(x+this.random()*3+1,y);c.lineTo(x,y+this.random()*4+1);c.fill();}});
   texture.wrapS=texture.wrapT=T.RepeatWrapping;texture.repeat.set(2,30);
-  const mats=[new T.MeshStandardMaterial({color:0xd4789c,roughness:.43,metalness:.05}),new T.MeshStandardMaterial({map:texture,color:0xfff7e6,roughness:.76})];
+  const grain=tex(128,128,(c,w,h)=>{c.fillStyle='#bcbcbc';c.fillRect(0,0,w,h);for(let i=0;i<8000;i++){const v=160+Math.floor(this.random()*80);c.fillStyle=`rgb(${v},${v},${v})`;c.fillRect(this.random()*w,this.random()*h,1,1);}});grain.wrapS=grain.wrapT=T.RepeatWrapping;grain.repeat.set(12,180);
+  const mats=[new T.MeshStandardMaterial({color:0xd4789c,roughness:.48,metalness:.05,bumpMap:grain,bumpScale:.018}),new T.MeshStandardMaterial({map:texture,color:0xfff7e6,roughness:.76})];
   const surfaces=[[],[]],indices=[[],[]],uvs=[[],[]];
   for(let s=-5;s<LENGTH+8;s+=.5){
    const a=Math.max(0,s),b=Math.min(LENGTH,s+.5),w=width(a),lanes=[-w-1.2,-w,-2.4,0,2.4,w,w+1.2];
@@ -56,12 +57,13 @@ export class LunaWorld{
    const pts=[];for(let s=0;s<=LENGTH;s+=3)pts.push([center(s)+side*(width(s)+.1),.07,-s]);this.pipe(0xe5b56f,pts,.055,this.play);
    for(let s=0;s<LENGTH;s+=4){const x=center(s)+side*(width(s)+.7);this.box(0xffebd0,x,-.25,-s,.14,.6,.16);if(s%12===0)this.lantern(x,-s);}
   }
+  for(let s=3;s<LENGTH;s+=6){for(const side of [-1,1]){const x=center(s)+side*(width(s)-.5);const tile=this.mesh(new T.PlaneGeometry(.38,2.8),0xe6a2b6,x,.012,-s,1,1,1,this.play);tile.rotation.x=-Math.PI/2;tile.rotation.z=side*.12;}}
   for(let s=8;s<LENGTH;s+=9){const x=center(s);const m=this.mesh(new T.RingGeometry(.16,.21,12,1,0,Math.PI*1.5),0xc48679,x,.015,-s,1,1,1,this.play);m.rotation.x=-Math.PI/2;}
   for(const h of OBSTACLES){const x=center(h.s)+h.lane,g=new T.Group();g.position.set(x,0,-h.s);this.play.add(g);
    this.mesh(new T.CylinderGeometry(.55,.7,.25,16),0xe9c8b1,0,.125,0,1,1,1,g);this.mesh(new T.ConeGeometry(.38,.9,12),0xb57888,0,.65,0,1,1,1,g);this.mesh(new T.TorusGeometry(.28,.025,5,16),0xffe5af,0,.6,0,1,1,1,g).rotation.x=Math.PI/2;
   }
   for(let s=12;s<LENGTH;s+=28){for(const side of [-1,1]){const geo=new T.RingGeometry(1.1,1.14,40);geo.rotateX(-Math.PI/2);this.mesh(geo,0xf6dabb,center(s)+side*3,.022,-s,1,1,1,this.play);}const m=this.mesh(new T.RingGeometry(.55,.58,40),0xf6dabb,center(s),.023,-s,1,1,1,this.play);m.rotation.x=-Math.PI/2;}
-  this.sign('LE TREMPLIN DES ÉTOILES',center(103)-4,1.3,-103,3.8);
+  this.sign('LE TREMPLIN DES ÉTOILES',center(103)-8.1,1.3,-103,3.8);
  }
  lantern(x,z){
   this.pipe(0x775257,[[x,0,z],[x,2.9,z],[x+.3,3.2,z],[x+.6,3.1,z]],.045);
@@ -158,15 +160,15 @@ export class LunaWorld{
  batch(root){
   root.updateMatrixWorld(true);const groups=new Map(),remove=[],inverse=new T.Matrix4().copy(root.matrixWorld).invert();
   const partition=root===this.decor||root===this.detail;
-  root.traverse(m=>{if(!m.isMesh||m.userData.dynamic)return;for(let p=m.parent;p&&p!==root;p=p.parent)if(p.userData.dynamic)return;if(root!==this.wheel&&this.wheel.getObjectById(m.id))return;
-   const g=m.geometry.clone();g.applyMatrix4(new T.Matrix4().multiplyMatrices(inverse,m.matrixWorld));g.computeBoundingBox();const z=g.boundingBox.getCenter(new T.Vector3()).z,zone=partition?Math.floor(z/24):0,key=m.material.uuid+':'+zone;
+  root.traverse(m=>{if(!m.isMesh||m.isInstancedMesh||m.userData.dynamic)return;for(let p=m.parent;p&&p!==root;p=p.parent)if(p.userData.dynamic)return;if(root!==this.wheel&&this.wheel.getObjectById(m.id))return;
+   const g=m.geometry.clone();g.applyMatrix4(new T.Matrix4().multiplyMatrices(inverse,m.matrixWorld));g.computeBoundingBox();const z=g.boundingBox.getCenter(new T.Vector3()).z,zone=partition?Math.floor(z/48):0,key=m.material.uuid+':'+zone;
    if(!groups.has(key))groups.set(key,{mat:m.material,geos:[],zone});groups.get(key).geos.push(g);remove.push(m);
   });
   remove.forEach(m=>{m.removeFromParent();m.geometry.dispose();});
   for(const {mat,geos,zone} of groups.values()){const m=new T.Mesh(merge(geos),mat);m.receiveShadow=true;m.castShadow=true;root.add(m);if(partition){m.geometry.computeBoundingBox();this.chunks.push({mesh:m,min:m.geometry.boundingBox.min.z,max:m.geometry.boundingBox.max.z});}geos.forEach(g=>g.dispose());}
  }
  update(dt,s,low=false){
-  this.time+=dt;this.roses.forEach((g,i)=>{g.visible=!s.roses.has(i);g.rotation.y=this.time*.8;g.position.y=1+Math.sin(this.time*2+i)*.12;});for(const {g,flower,h} of this.sweepers){g.position.set(center(h.s)+sweeperLane(h,s.time),0,-h.s);flower.rotation.z=s.time*1.6;}this.trail.visible=s.v>4&&!s.grounded&&s.trickPhase>0;if(this.trail.visible){const a=this.trail.geometry.attributes.position;for(let i=0;i<2;i++){const j=(this.trailIndex++)%32;a.setXYZ(j,center(s.s)+s.lane+(i?-.17:.17),s.y+.13,-s.s);}a.needsUpdate=true;}for(const c of this.chunks)c.mesh.visible=c.max>-s.s-(low?100:150)&&c.min<-s.s+35;for(const o of this.occluders)o.visible=Math.abs(o.position.z+s.s)<(low?100:150);for(const b of this.banners)b.rotation.z=Math.sin(this.time*1.4+b.position.z)*.055;this.detail.visible=!low;this.sun.castShadow=!low;
+  this.time+=dt;this.roses.forEach((g,i)=>{g.visible=!s.roses.has(i);g.rotation.y=this.time*.8;g.position.y=1+Math.sin(this.time*2+i)*.12;});for(const {g,flower,h} of this.sweepers){g.position.set(center(h.s)+sweeperLane(h,s.time),0,-h.s);flower.rotation.z=s.time*1.6;}this.trail.visible=s.v>4&&!s.grounded&&s.trickPhase>0;if(this.trail.visible){const a=this.trail.geometry.attributes.position;for(let i=0;i<2;i++){const j=(this.trailIndex++)%32;a.setXYZ(j,center(s.s)+s.lane+(i?-.17:.17),s.y+.13,-s.s);}a.needsUpdate=true;}for(const c of this.chunks)c.mesh.visible=c.max>-s.s-(low?100:150)&&c.min<-s.s+35;for(const o of this.occluders){const distance=Math.abs(o.position.z+s.s);o.visible=distance<(low?85:120);o.traverse(m=>{if(m.isMesh)m.castShadow=distance<25;});}for(const b of this.banners)b.rotation.z=Math.sin(this.time*1.4+b.position.z)*.055;this.detail.visible=!low;this.sun.castShadow=!low;
   this.sun.position.set(center(s.s)-15,25,-s.s+16);this.sun.target.position.set(center(s.s),0,-s.s-10);
   this.wheel.rotation.z=this.time*.035;
   for(const b of this.booths){const a=b.userData.angle;b.position.set(Math.cos(a)*8,Math.sin(a)*8,0);b.rotation.z=-this.wheel.rotation.z;}

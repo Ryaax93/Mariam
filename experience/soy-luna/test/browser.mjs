@@ -8,7 +8,7 @@ const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.woff
 const server=http.createServer(async(req,res)=>{try{const u=new URL(req.url,'http://localhost'),pathname=decodeURIComponent(u.pathname);let p=path.resolve(root,'.'+pathname);if(!p.startsWith(root+path.sep)&&p!==root)throw Error('Forbidden');if((await fs.stat(p)).isDirectory())p=path.join(p,'index.html');res.setHeader('Content-Type',mime[path.extname(p)]||'application/octet-stream');res.end(await fs.readFile(p));}catch{res.statusCode=404;res.end('missing');}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));const url='http://127.0.0.1:'+server.address().port+'/soy-luna/';
 const report={source:process.env.GITHUB_SHA||'local',platform:process.platform,note:'Linux browsers / software GPU, not physical iPhone Safari',checks:[],errors:[],captures:[],measurements:[]};
-let browser;function check(name,condition,details){report.checks.push({name,pass:!!condition,...(details?{details}:{})});if(!condition)throw Error(name);}
+let browser;function check(name,condition,details){report.checks.push({name,pass:!!condition,...(details?{details}:{})});if(!condition)process.exitCode=1;}
 async function shot(page,name){const bytes=await page.screenshot({path:path.join(out,name+'.jpg'),type:'jpeg',quality:75});report.captures.push(name+'.jpg');}
 try{
  browser=await chromium.launch({headless:true,args:['--use-angle=swiftshader','--enable-unsafe-swiftshader']});
@@ -24,17 +24,18 @@ try{
  await shot(page,'skating');
  await page.locator('#pause').click();const before=await page.evaluate(()=>mariamLuna().state);await page.waitForTimeout(300);const after=await page.evaluate(()=>mariamLuna().state);check('pause freezes simulation',before.s===after.s&&before.time===after.time);
  await page.locator('#quality').selectOption('low');await page.locator('#resume').click();
+ await page.evaluate(()=>{window.touchTrace=[];for(const type of ['pointerdown','pointerup','pointercancel','lostpointercapture','touchend'])window.addEventListener(type,e=>touchTrace.push({type,id:e.pointerId,target:e.target.id,touches:e.touches?[...e.touches].map(t=>({id:t.identifier,target:t.target.id})):null}),true);});
  // Real two-finger CDP touch. Read state only; gameplay is never teleported.
  const cdp=await context.newCDPSession(page),stick=await page.locator('#stick').boundingBox(),jump=await page.locator('#jump').boundingBox();
  const a={x:stick.x+stick.width/2,y:stick.y+10,id:1},b={x:jump.x+jump.width/2,y:jump.y+jump.height/2,id:2};
  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[a]});await page.waitForTimeout(250);
- await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[a,b]});await page.waitForTimeout(120);
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[b]});await page.waitForTimeout(120);
  d=await page.evaluate(()=>mariamLuna());check('two-finger steering and jump',d.input.forward>.5&&d.input.jump);
  const boost=await page.locator('#boost').boundingBox(),c={x:boost.x+boost.width/2,y:boost.y+boost.height/2,id:3};
- await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[a,b,c]});d=await page.evaluate(()=>mariamLuna());check('three simultaneous contacts',d.input.forward>.5&&d.input.jump&&d.input.boost);
- await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[a,c]});d=await page.evaluate(()=>mariamLuna());check('release jump retains independent joystick and boost',!d.input.jump&&d.input.boost&&d.input.forward>.5);
- const outside={...a,x:stick.x-45,y:stick.y-40};await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[outside,c]});d=await page.evaluate(()=>mariamLuna());check('joystick tracks outside its original zone',d.input.steer<-.3);
- await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[c]});d=await page.evaluate(()=>mariamLuna());check('release outside clears joystick while boost held',d.input.steer===0&&d.input.forward===0&&d.input.boost);
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[c]});d=await page.evaluate(()=>mariamLuna());check('three simultaneous contacts',d.input.forward>.5&&d.input.jump&&d.input.boost);
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[b]});d=await page.evaluate(()=>mariamLuna());check('release jump retains independent joystick and boost',!d.input.jump&&d.input.boost&&d.input.forward>.5,{input:d.input,contacts:d.contacts,trace:await page.evaluate(()=>window.touchTrace)});
+ const outside={...a,x:stick.x-45,y:stick.y-40};await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[outside]});d=await page.evaluate(()=>mariamLuna());check('joystick tracks outside its original zone',d.input.steer<-.3,{input:d.input,contacts:d.contacts});
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[outside]});d=await page.evaluate(()=>mariamLuna());check('release outside clears joystick while boost held',d.input.steer===0&&d.input.forward===0&&d.input.boost,{input:d.input,contacts:d.contacts});
 
  await cdp.send('Input.dispatchTouchEvent',{type:'touchCancel',touchPoints:[]});await page.waitForTimeout(60);
  d=await page.evaluate(()=>mariamLuna());check('touch cancel clears input',d.input.forward===0&&!d.input.jump&&!d.input.boost&&d.contacts.contacts===0);
