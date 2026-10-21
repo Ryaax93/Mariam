@@ -25,11 +25,12 @@ function ui(next){
  if(next==='welcome')$('continue').hidden=!saved;
 }
 function event(kind,data){
- audio.effect(kind);
+ audio.effect(kind,data);
  if(kind==='note')toast(data.perfect?'Dans le rythme ! +75 ♫':'Jolie trajectoire ♫');
  if(kind==='checkpoint'){persist();toast('Un petit repère, pour revenir ici.');}
  if(kind==='jump'){}
- if(kind==='land'&&data)toast('Une étoile sur les rollers ! +100');
+ if(kind==='land'&&data)toast(data.label+' · +'+data.points+(data.fresh?' · Nouvelle figure !':''));
+ if(kind==='rose')toast('Une rose pour toi · +250');
  if(kind==='bump')toast('Oups ! Un petit coup de frein.');
  if(kind==='fall'){if(session.hp<=0)saved=null;persist();toast('Je garde ta place. On repart ensemble.');}
  if(kind==='respawn'){follow.reset();persist();}
@@ -40,7 +41,7 @@ function event(kind,data){
   $('resultLabel').textContent=kind==='win'?'NOTRE PREMIÈRE ÉTOILE':'CE N’EST QU’UN PETIT DÉTOUR';
   $('resultTitle').innerHTML=kind==='win'?'Tu fais tourner<br>mon monde.':'Encore une<br>petite chance ?';
   $('resultText').textContent=kind==='win'?'Tout a commencé par ton commentaire pendant mon live. Un message, puis nous. Et maintenant, c’est tout un petit monde qui s’allume pour toi.':'Tes souvenirs sont toujours là. La piste sera encore plus douce au prochain tour.';
-  $('resultScore').textContent=kind==='win'?'★'.repeat(session.medal)+'  '+session.score+' points · '+session.notes.size+'/12 notes':'♥ On recommence ensemble';
+  $('resultScore').textContent=kind==='win'?'★'.repeat(session.medal)+'  '+session.score+' points · '+session.notes.size+'/12 notes · '+session.figures.size+'/5 figures · '+session.roses.size+'/3 roses':'♥ On recommence ensemble';
  }
 }
 function start(resume=false){
@@ -81,13 +82,14 @@ function animate(now){
   const t=options.soft?0:now*.00009;camera.position.set(3.6+Math.sin(t)*.35,2.15,5.1);camera.lookAt(-1.1,1.35,-1.5);camera.updateMatrixWorld();follow.initial=false;
  }else follow.update(dt,session,options.soft);
  world.update(mode==='pause'?0:dt,session,options.quality==='low');
- audio.tick(mode==='playing'&&!portrait,session.s/LENGTH);
+ audio.tick(mode==='playing'&&!portrait,session.s/LENGTH,session.elapsed);
  bodyPoint.set(p.x,p.y+1.2,p.z);sight.update(renderer,camera,bodyPoint,mode==='welcome'?bodyPoint:follow.landing,dt);
  marker.visible=mode==='playing'&&!session.grounded&&session.y>0;
  marker.position.copy(follow.landing);
+ $('score').textContent=session.score+' pts';$('collection').textContent=session.figures.size+'/5 figures · '+session.roses.size+'/3 roses';
  $('notes').textContent='♫ '+session.notes.size+' / 12';$('hearts').textContent='♥ '.repeat(Math.max(0,session.hp)).trim();
  $('objective').textContent=session.s<30?'Glisse vers les notes':session.s<100?'Trouve ton rythme':session.s<125?'Un saut… ou la voie de côté':session.s<185?'La promenade des étoiles':'La dernière lumière est pour toi';
- $('beat').firstElementChild.style.transform='scale('+(1+Math.pow(1-(session.time*BPM/60%1),4)*.6)+')';
+ $('beat').firstElementChild.style.transform='scale('+(1+Math.pow(1-(session.elapsed*BPM/60%1),4)*.6)+')';
  if(now>toastUntil)$('toast').classList.remove('show');
  renderer.render(scene,camera);requestAnimationFrame(animate);
 }
@@ -103,7 +105,7 @@ try{
  window.mariamLuna=()=>{
   const sorted=[...frames].sort((a,b)=>a-b),pick=q=>sorted[Math.floor((sorted.length-1)*q)]||0;
   const screen=point=>{const p=point.clone().project(camera);return {x:p.x,y:p.y,z:p.z};};
-  return {version:'luna-v2',mode,portrait,state:{s:session.s,lane:session.lane,y:session.y,v:session.v,vl:session.vl,vy:session.vy,grounded:session.grounded,status:session.status,time:session.time,elapsed:session.elapsed,hp:session.hp,notes:[...session.notes],passed:[...session.passed],checkpoint:session.checkpoint,score:session.score,falls:session.falls,hits:session.hits},input:input(),contacts:controls.diagnostics(),rig:avatar.stats,render:{calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,width:renderer.domElement.width,height:renderer.domElement.height},camera:{body:screen(bodyPoint),landing:screen(follow.landing),position:camera.position.toArray(),faded:sight.faded},performance:{frames:frames.length,p50:pick(.5),p95:pick(.95),fps:frames.length?1000/(frames.reduce((a,b)=>a+b,0)/frames.length):0,droppedSimulation:clock.dropped},save:!!saved,storageOK,audio:{state:audio.ctx?.state||'locked',enabled:audio.enabled,notes:audio.nodes.size,steps:audio.step},errors:[...errorMessages]};
+  return {version:'luna-v2',mode,portrait,state:{s:session.s,lane:session.lane,y:session.y,v:session.v,vl:session.vl,vy:session.vy,grounded:session.grounded,status:session.status,time:session.time,elapsed:session.elapsed,hp:session.hp,notes:[...session.notes],passed:[...session.passed],checkpoint:session.checkpoint,score:session.score,falls:session.falls,hits:session.hits,trickName:session.trickName,trickPhase:session.trickPhase,figures:[...session.figures],roses:[...session.roses]},input:input(),contacts:controls.diagnostics(),rig:avatar.stats,render:{calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,width:renderer.domElement.width,height:renderer.domElement.height},camera:{body:screen(bodyPoint),landing:screen(follow.landing),position:camera.position.toArray(),faded:sight.faded},performance:{frames:frames.length,p50:pick(.5),p95:pick(.95),fps:frames.length?1000/(frames.reduce((a,b)=>a+b,0)/frames.length):0,droppedSimulation:clock.dropped},save:!!saved,storageOK,audio:{state:audio.ctx?.state||'locked',enabled:audio.enabled,notes:audio.nodes.size,steps:audio.step},errors:[...errorMessages]};
  };
  // Explicit camera regression fixture, only when requested in a test URL.
  if(new URLSearchParams(location.search).has('camera-test')){

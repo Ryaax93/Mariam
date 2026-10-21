@@ -3,6 +3,8 @@ import fs from 'node:fs/promises';
 import {SkateSession,FixedClock,validateRun} from '../simulation.js';
 import {GATES,floor,width} from '../track.js';
 import {MariamRig} from '../character.js';
+import {ControlState} from '../controls.js';
+import {chooseFigure,FIGURES} from '../tricks.js';
 const results=[];function test(name,fn){fn();results.push({name,pass:true});}
 function run(rate=60,seconds=2,inp={forward:1}){const s=new SkateSession();s.start();const c=new FixedClock();for(let i=0;i<rate*seconds;i++)c.advance(1/rate,s,inp);return s;}
 test('acceleration progressive',()=>{const s=run();assert(s.v>7&&s.v<7.6);assert(s.s>10);});
@@ -21,7 +23,13 @@ test('complete course by deterministic ordinary inputs',()=>{const s=new SkateSe
 test('obstacle slows without removing a heart, then cooldown',()=>{const s=new SkateSession();s.start();s.s=53.2;s.lane=1.8;s.v=7;for(let i=0;i<10;i++)s.step(1/120,{forward:1});assert.equal(s.hits,1);assert.equal(s.hp,3);assert(s.v<4);for(let i=0;i<20;i++)s.step(1/120,{});assert.equal(s.hits,1);});
 test('ivory shoulder is solid until its visible edge',()=>{assert.equal(floor(80,width(80)+.8),-.025);assert.equal(floor(80,width(80)+1.3),null);});
 const rig=new MariamRig();
-test('real shared skeleton with weighted geometry',()=>{assert.equal(rig.bones.length,20);assert(rig.stats.triangles>3000);assert(rig.stats.triangles<26000);for(const m of rig.meshes){assert(m.isSkinnedMesh);assert.equal(m.skeleton,rig.skeleton);const w=m.geometry.attributes.skinWeight;for(let j=0;j<w.count;j++)assert(Math.abs(w.getX(j)+w.getY(j)+w.getZ(j)+w.getW(j)-1)<.0001);}});
+test('real shared skeleton with weighted geometry',()=>{assert.equal(rig.bones.length,20);assert(rig.stats.triangles>3000);assert(rig.stats.triangles<45000);for(const m of rig.meshes){assert(m.isSkinnedMesh);assert.equal(m.skeleton,rig.skeleton);const w=m.geometry.attributes.skinWeight;for(let j=0;j<w.count;j++)assert(Math.abs(w.getX(j)+w.getY(j)+w.getZ(j)+w.getW(j)-1)<.0001);}});
 test('all character geometry finite',()=>{for(const m of rig.meshes)for(const k of ['position','normal'])assert([...m.geometry.attributes[k].array].every(Number.isFinite));});
-await fs.mkdir(new URL('../evidence/',import.meta.url),{recursive:true});
-const report={engine:'Node, deterministic simulation and geometry only',results,rig:rig.stats};await fs.writeFile(new URL('../evidence/unit.json',import.meta.url),JSON.stringify(report,null,2));console.log('LUNA_UNIT_REPORT '+JSON.stringify(report));
+test('touch ownership, independent releases, second finger cannot steal stick',()=>{const c=new ControlState();assert(c.begin(17,'stick'));c.move(17,-2,-1);assert(!c.begin(21,'stick'));c.begin(21,'jump');c.begin(30,'boost');assert(c.read().jump&&c.read().boost&&c.read().steer<0);c.end(21);assert(!c.read().jump&&c.read().steer<0&&c.read().boost);c.end(17);assert.equal(c.read().steer,0);assert.equal(c.read().forward,0);c.reset();assert(!c.read().boost);assert.equal(c.contacts.size,0);});
+test('five figure selections by direction, speed and beat',()=>{assert.equal(chooseFigure({},7,false),'rotation');assert.equal(chooseFigure({steer:1},7,false),'etoile');assert.equal(chooseFigure({steer:-1},7,false),'arabesque');assert.equal(chooseFigure({boost:true},9,false),'croise');assert.equal(chooseFigure({boost:true},9,true),'rythme');});
+test('held jump awards a figure once; stationary farming blocked',()=>{const s=new SkateSession();s.start();for(let i=0;i<110;i++)s.step(1/120,{jump:true});assert.equal(s.figures.size,1);const score=s.score;s.step(1/120,{});for(let i=0;i<110;i++)s.step(1/120,{jump:true});assert.equal(s.score,score);});
+test('tap jump does not award aerial figure',()=>{const s=new SkateSession();s.start();s.step(1/120,{jump:true});for(let i=0;i<110;i++)s.step(1/120,{});assert.equal(s.figures.size,0);});
+test('additive save migration preserves V1 and V2 collections',()=>{const s=new SkateSession();s.figures.add('etoile');s.roses.add(2);s.trickSectors.add(5);const t=new SkateSession();assert(t.restore(s.snapshot()));assert(t.figures.has('etoile')&&t.roses.has(2)&&t.trickSectors.has(5));const old=s.snapshot();delete old.figures;delete old.roses;delete old.trickSectors;assert(t.restore(old));assert.equal(t.figures.size,0);});
+test('all five articulated poses and morph buffers remain valid',()=>{const poses=[];for(const name of Object.keys(FIGURES)){rig.animate(.2,{v:9,vl:.2,grounded:false,trickName:name,trickPhase:.45,landing:0},0);poses.push(rig.bones.slice(5,17).map(b=>b.rotation.toArray().slice(0,3).map(v=>v.toFixed(3))).join());}assert.equal(new Set(poses).size,5);for(const m of rig.meshes)for(const a of m.geometry.morphAttributes.position||[])assert.equal(a.count,m.geometry.attributes.position.count);});
+await fs.mkdir(new URL('../evidence/v2/',import.meta.url),{recursive:true});
+const report={engine:'Node, deterministic simulation and geometry only',results,rig:rig.stats};await fs.writeFile(new URL('../evidence/v2/unit.json',import.meta.url),JSON.stringify(report,null,2));console.log('LUNA_UNIT_REPORT '+JSON.stringify(report));

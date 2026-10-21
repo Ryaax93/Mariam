@@ -1,5 +1,6 @@
 import * as T from '../vendor/three.module.js';
 import {finishShop,dressWorld} from './environment-assets.js';
+import {ROSES,SWEEPERS,sweeperLane} from './tricks.js';
 import {center,width,floor,LENGTH,GATES,OBSTACLES,worldPoint} from './track.js';
 const V=(x,y,z)=>new T.Vector3(x,y,z);
 function tex(w,h,paint){const c=document.createElement('canvas');c.width=w;c.height=h;paint(c.getContext('2d'),w,h);const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;return t;}
@@ -13,7 +14,7 @@ function merge(list){
 export class LunaWorld{
  constructor(scene){
   this.scene=scene;this.decor=new T.Group();this.play=new T.Group();this.detail=new T.Group();scene.add(this.decor,this.play,this.detail);this.materials=new Map();this.gates=[];this.wheel=new T.Group();this.booths=[];this.flags=[];this.leaves=[];this.time=0;this.chunks=[];this.occluders=[];this.random=rng(104);
-  this.sky();this.ground();this.course();this.town();this.ferris();this.musicGates();this.checkpoints();dressWorld(this);this.batch(this.wheel);this.batch(this.play);this.batch(this.decor);this.batch(this.detail);
+  this.sky();this.ground();this.course();this.town();this.ferris();this.musicGates();this.checkpoints();dressWorld(this);this.challenges();this.batch(this.wheel);this.batch(this.play);this.batch(this.decor);this.batch(this.detail);
  }
  mat(color,rough=.7){const key=color+':'+rough;if(!this.materials.has(key))this.materials.set(key,new T.MeshStandardMaterial({color,roughness:rough,metalness:rough<.4?.15:.02}));return this.materials.get(key);}
  mesh(geo,color,x=0,y=0,z=0,sx=1,sy=sx,sz=sx,parent=this.decor,rough=.7){const m=new T.Mesh(geo,this.mat(color,rough));m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;}
@@ -143,6 +144,17 @@ export class LunaWorld{
   });
  }
  checkpoints(){for(const s of [74,144]){const x=center(s)-4.3;this.pipe(0xa47d68,[[x,0,-s],[x,2,-s]],.04);const flag=this.box(0xe4a1b7,x+.35,1.7,-s,.7,.4,.03);this.flags.push(flag);}}
+ challenges(){
+  this.roses=[];this.sweepers=[];
+  const heart=new T.Shape();heart.moveTo(0,-.22);heart.bezierCurveTo(-.5,.05,-.3,.5,0,.22);heart.bezierCurveTo(.3,.5,.5,.05,0,-.22);
+  for(const r of ROSES){const g=new T.Group();g.position.set(center(r.s)+r.lane,1,-r.s);g.userData.dynamic=true;this.play.add(g);this.mesh(new T.ExtrudeGeometry(heart,{depth:.08,bevelSize:.03,bevelThickness:.02,bevelSegments:2,steps:1,curveSegments:8}),0xe17598,0,0,0,1,1,1,g);this.mesh(new T.TorusGeometry(.5,.018,5,32),0xffdfaa,0,.06,0,1,1,1,g);this.batch(g);this.roses.push(g);}
+  for(const h of SWEEPERS){const g=new T.Group();g.userData.dynamic=true;this.play.add(g);
+   this.mesh(new T.CylinderGeometry(.52,.62,.18,12),0xe6b68b,0,.1,0,1,1,1,g);this.mesh(new T.CylinderGeometry(.25,.35,.68,12),0xb57491,0,.48,0,1,1,1,g);this.pipe(0xa77860,[[0,.5,0],[0,1.5,0]],.035,g);
+   const flower=new T.Group();flower.position.y=1.25;flower.userData.dynamic=true;g.add(flower);for(let j=0;j<5;j++){const a=j*Math.PI*.4,m=this.ball(j%2?0xffd2a2:0xd87c9d,Math.cos(a)*.23,Math.sin(a)*.23,0,.23,.11,.05,flower);m.rotation.z=a;}this.ball(0xf8dfac,0,0,.05,.1,.1,.055,flower);this.batch(flower);this.batch(g);this.sweepers.push({g,flower,h});
+   for(let lane=-3.2;lane<3.3;lane+=.4)this.box(0xe8b39c,center(h.s)+lane,.018,-h.s,.18,.012,.5,this.play);
+  }
+  const p=new Float32Array(32*3);this.trail=new T.Points(new T.BufferGeometry().setAttribute('position',new T.BufferAttribute(p,3)),new T.PointsMaterial({color:0xffd9a7,size:.06,transparent:true,opacity:.7,depthWrite:false}));this.trail.frustumCulled=false;this.scene.add(this.trail);this.trailIndex=0;
+ }
  batch(root){
   root.updateMatrixWorld(true);const groups=new Map(),remove=[],inverse=new T.Matrix4().copy(root.matrixWorld).invert();
   const partition=root===this.decor||root===this.detail;
@@ -154,7 +166,7 @@ export class LunaWorld{
   for(const {mat,geos,zone} of groups.values()){const m=new T.Mesh(merge(geos),mat);m.receiveShadow=true;m.castShadow=true;root.add(m);if(partition){m.geometry.computeBoundingBox();this.chunks.push({mesh:m,min:m.geometry.boundingBox.min.z,max:m.geometry.boundingBox.max.z});}geos.forEach(g=>g.dispose());}
  }
  update(dt,s,low=false){
-  this.time+=dt;for(const c of this.chunks)c.mesh.visible=c.max>-s.s-(low?100:150)&&c.min<-s.s+35;for(const o of this.occluders)o.visible=Math.abs(o.position.z+s.s)<(low?100:150);for(const b of this.banners)b.rotation.z=Math.sin(this.time*1.4+b.position.z)*.055;this.detail.visible=!low;this.sun.castShadow=!low;
+  this.time+=dt;this.roses.forEach((g,i)=>{g.visible=!s.roses.has(i);g.rotation.y=this.time*.8;g.position.y=1+Math.sin(this.time*2+i)*.12;});for(const {g,flower,h} of this.sweepers){g.position.set(center(h.s)+sweeperLane(h,s.time),0,-h.s);flower.rotation.z=s.time*1.6;}this.trail.visible=s.v>4&&!s.grounded&&s.trickPhase>0;if(this.trail.visible){const a=this.trail.geometry.attributes.position;for(let i=0;i<2;i++){const j=(this.trailIndex++)%32;a.setXYZ(j,center(s.s)+s.lane+(i?-.17:.17),s.y+.13,-s.s);}a.needsUpdate=true;}for(const c of this.chunks)c.mesh.visible=c.max>-s.s-(low?100:150)&&c.min<-s.s+35;for(const o of this.occluders)o.visible=Math.abs(o.position.z+s.s)<(low?100:150);for(const b of this.banners)b.rotation.z=Math.sin(this.time*1.4+b.position.z)*.055;this.detail.visible=!low;this.sun.castShadow=!low;
   this.sun.position.set(center(s.s)-15,25,-s.s+16);this.sun.target.position.set(center(s.s),0,-s.s-10);
   this.wheel.rotation.z=this.time*.035;
   for(const b of this.booths){const a=b.userData.angle;b.position.set(Math.cos(a)*8,Math.sin(a)*8,0);b.rotation.z=-this.wheel.rotation.z;}
