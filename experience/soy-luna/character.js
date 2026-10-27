@@ -5,7 +5,10 @@ function loft(rows,n=20){
  const p=[],ix=[];
  for(const [y,rx,rz,cx=0,cz=0] of rows)for(let j=0;j<=n;j++){const a=j/n*TAU;p.push(cx+Math.sin(a)*rx,y,cz+Math.cos(a)*rz);}
  for(let k=0;k<rows.length-1;k++)for(let j=0;j<n;j++){const a=k*(n+1)+j,b=a+n+1;ix.push(a,a+1,b,b,a+1,b+1);}
- const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p,3));g.setIndex(ix);g.computeVertexNormals();return g;
+ const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p,3));g.setIndex(ix);g.computeVertexNormals();
+ // Weld normals at duplicate seam vertices: removes the centre split in the face.
+ const normal=g.attributes.normal;for(let k=0;k<rows.length;k++){const a=k*(n+1),b=a+n,v=new T.Vector3(normal.getX(a)+normal.getX(b),normal.getY(a)+normal.getY(b),normal.getZ(a)+normal.getZ(b)).normalize();normal.setXYZ(a,v.x,v.y,v.z);normal.setXYZ(b,v.x,v.y,v.z);}
+ return g;
 }
 function tube(points,r=.012,segments=20,sides=6){return new T.TubeGeometry(new T.CatmullRomCurve3(points.map(p=>new T.Vector3(...p))),segments,r,sides,false);}
 function ellipsoid(x,y,z,rx,ry,rz,detail=16){const g=new T.SphereGeometry(1,detail,Math.min(10,Math.max(4,Math.floor(detail*.6))));g.scale(rx,ry,rz);g.translate(x,y,z);return g;}
@@ -14,23 +17,40 @@ function ribbon(points,widths,depth=.003){
  const p=[],ix=[];points.forEach(([x,y,z],i)=>{const w=widths[i];p.push(x,y-w,z,x,y+w,z+depth);if(i<points.length-1){const a=i*2;ix.push(a,a+2,a+1,a+1,a+2,a+3);}});
  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p,3));g.setIndex(ix);g.computeVertexNormals();return g;
 }
-// Almond surface, including its domed cornea. Shape remains bounded by the eyelids.
-function almond(cx,cy,cz,side){
- const p=[],ix=[],steps=20,rings=4;
+// Cornea and iris share one low relief. The iris is clipped by the eyelid opening.
+function eyeSurface(cx,cy,cz,side,kind='white'){
+ const p=[],ix=[],steps=24,rings=4;
+ const bound=(x,up)=>Math.pow(Math.max(0,1-(x/.052)**2),.7)*(up?.017:.0135);
  for(let r=0;r<=rings;r++)for(let j=0;j<=steps;j++){
-  const a=j/steps*TAU,q=r/rings,x=Math.cos(a)*.052*q;
-  const y=Math.sin(a)*(.025-.007*Math.abs(Math.cos(a)))*q+side*x*.10;
-  p.push(cx+x,cy+y,cz+Math.sqrt(Math.max(0,1-q*q))*.014-.004*Math.abs(x)/.052);
+  const a=j/steps*TAU,q=r/rings;
+  let x=Math.cos(a)*(kind==='white'?.052:kind==='iris'?.0245:.0105)*q;
+  let y=Math.sin(a)*(kind==='white'?.017:kind==='iris'?.025:.017)*q;
+  if(kind==='white')y=Math.sin(a)*(Math.sin(a)>0?.017:.0135)*q*Math.pow(Math.max(0,1-Math.cos(a)**2),.12);
+  else y=clamp(y,-bound(x,false),bound(x,true));
+  const dome=Math.sqrt(Math.max(0,1-(x/.057)**2-(y/.035)**2))*.008;
+  p.push(cx+x,cy+y+side*x*.095,cz+dome+(kind==='white'?0:kind==='iris'?.0015:.003));
  }
  for(let r=0;r<rings;r++)for(let j=0;j<steps;j++){const a=r*(steps+1)+j,b=a+steps+1;ix.push(a,b,a+1,a+1,b,b+1);}
  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p,3));g.setIndex(ix);g.computeVertexNormals();return g;
 }
+// Hairline exposes the brows, curving down at the temples and nape.
+function scalp(){
+ const p=[],ix=[],around=48,rings=10;
+ for(let k=0;k<=rings;k++)for(let j=0;j<=around;j++){
+  const t=k/rings,a=j/around*TAU,front=Math.max(0,Math.cos(a)),edge=1.995+Math.pow(front,3)*.133;
+  const ang=t*Math.PI*.5,ruffle=.004*Math.sin(a*17+t*4)*Math.sin(ang),radius=Math.sin(ang);
+  p.push(Math.sin(a)*(.183+ruffle)*radius,2.255-(2.255-edge)*(1-Math.cos(ang)),Math.cos(a)*(.154+ruffle)*radius-.027);
+ }
+ for(let k=0;k<rings;k++)for(let j=0;j<around;j++){const a=k*(around+1)+j,b=a+around+1;ix.push(a,b,a+1,a+1,b,b+1);}
+ const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p,3));g.setIndex(ix);g.computeVertexNormals();
+ const n=g.attributes.normal;for(let k=0;k<=rings;k++){const a=k*(around+1),b=a+around,v=new T.Vector3(n.getX(a)+n.getX(b),n.getY(a)+n.getY(b),n.getZ(a)+n.getZ(b)).normalize();n.setXYZ(a,v.x,v.y,v.z);n.setXYZ(b,v.x,v.y,v.z);}return g;
+}
 // Variable-section curl: a continuously tapered lock, not disconnected cylinders.
 function curl(points,seed){
- const path=new T.CatmullRomCurve3(points.map(p=>new T.Vector3(...p))),n=32,sides=5;
+ const path=new T.CatmullRomCurve3(points.map(p=>new T.Vector3(...p))),n=30,sides=5;
  const frames=path.computeFrenetFrames(n,false),p=[],ix=[];
  for(let i=0;i<=n;i++){
-  const t=i/n,pt=path.getPointAt(t),r=(.017+.004*Math.sin(seed*4))*(.65+.35*Math.sin(Math.PI*t))*(1-.82*smooth(.72,1,t));
+  const t=i/n,pt=path.getPointAt(t),r=(.0145+.0025*Math.sin(seed*4))*(.82+.18*Math.sin(Math.PI*t))*(1-.57*smooth(.82,1,t));
   for(let j=0;j<=sides;j++){const a=j/sides*TAU+.3*Math.sin(t*19+seed);const v=pt.clone().addScaledVector(frames.normals[i],Math.cos(a)*r).addScaledVector(frames.binormals[i],Math.sin(a)*r*.80);p.push(v.x,v.y,v.z);}
  }
  for(let i=0;i<n;i++)for(let j=0;j<sides;j++){const a=i*(sides+1)+j,b=a+sides+1;ix.push(a,a+1,b,b,a+1,b+1);}
@@ -50,9 +70,9 @@ export class MariamRig{
   this.bones=spec.map((s,i)=>{const b=new T.Bone();b.name=s[0];b.position.set(s[2],s[3],s[4]);if(s[1]>=0)b.position.sub(new T.Vector3(...spec[s[1]].slice(2)));return b;});
   spec.forEach((s,i)=>(s[1]<0?this.root:this.bones[s[1]]).add(this.bones[i]));
   this.root.updateMatrixWorld(true);this.skeleton=new T.Skeleton(this.bones);
-  const colors={skin:0xb8754e,hair:0x281613,hairLight:0x45251e,black:0x24222c,seam:0x3f3545,pink:0xe884b1,rose:0xb83c70,ivory:0xffe8d9,gold:0xd4a25b,eye:0x211410,iris:0x6c3526,lip:0x9e4251};
+  const colors={skin:0xb8754e,hair:0x281613,hairLight:0x45251e,black:0x24222c,seam:0x3f3545,pink:0xe884b1,rose:0xb83c70,ivory:0xffe8d9,gold:0xd4a25b,eye:0x211410,iris:0x6c3526,lip:0x883d43};
   this.materials={};this.parts=new Map();
-  for(const [k,color] of Object.entries(colors))this.materials[k]=new T.MeshStandardMaterial({color,roughness:k==='gold'?.29:k==='pink'?.38:k==='hair'||k==='hairLight'?.49:k==='skin'?.62:k==='eye'?.27:.82,metalness:k==='gold'?.65:0});
+  for(const [k,color] of Object.entries(colors))this.materials[k]=new T.MeshStandardMaterial({color,roughness:k==='gold'?.29:k==='pink'?.38:k==='hair'||k==='hairLight'?.76:k==='skin'?.62:k==='eye'?.27:.82,metalness:k==='gold'?.65:0});
   const add=(g,key,bone,other=bone,weight=null,morph=null)=>{
    const geom=g.index?g.toNonIndexed():g;const pos=geom.attributes.position,normal=geom.attributes.normal;
    if(!this.parts.has(key))this.parts.set(key,{p:[],n:[],si:[],sw:[],blink:[],smile:[]});const out=this.parts.get(key);
@@ -113,18 +133,20 @@ export class MariamRig{
    add(ellipsoid(side*.159,1.992,-.008,.027,.047,.022),'skin',4);
    add(ellipsoid(side*.175,1.994,.003,.009,.026,.013,10),'lip',4);
    const cx=side*.067,cy=2.019,cz=.126;
-   const blink=(x,y,z)=>({blink:[0,(cy-y)*.95,-.005],smile:[0,.002*Math.abs(x)/.13,0]});
-   add(almond(cx,cy,cz,side),'ivory',4,4,null,blink);
-   add(ellipsoid(cx-side*.002,cy,.141,.024,.023,.0055,16),'iris',4,4,null,blink);
-   add(ellipsoid(cx-side*.003,cy,.146,.0125,.018,.003,12),'eye',4,4,null,blink);
-   add(ellipsoid(cx-.007,cy+.009,.149,.0045,.005,.0015,8),'ivory',4,4,null,blink);
-   const eyelid=[[-.052,-.005],[-.029,.02],[0,.026],[.029,.021],[.053,.006]].map(([x,y])=>[cx+x,cy+y+side*x*.1,.127+(1-Math.abs(x)/.057)*.012]);
-   add(tube(eyelid,.0045,14,5),'eye',4,4,null,(x,y,z)=>({blink:[0,(cy-y)*1.05,0],smile:[0,.001,0]}));
-   for(let j=0;j<2;j++){const x=cx+side*(.043+j*.008);add(tube([[x,cy+.016,.131],[x+side*.009,cy+.026+j*.004,.136]],.003,2,4),'eye',4,4,null,blink);}
-   add(tube([[cx-.05,cy-.006,.126],[cx,cy-.024,.134],[cx+.05,cy+.002,.126]],.003,12,4),'lip',4,4,null,blink);
-   const browPoints=[[side*.021,2.084,.121],[side*.048,2.096,.129],[side*.080,2.098,.125],[side*.111,2.085,.110],[side*.124,2.076,.100]];
+   const blink=(x,y,z)=>({blink:[0,(cy-y)*.95,-.002],smile:[0,.001*Math.abs(x)/.13,0]});
+   add(eyeSurface(cx,cy,cz,side),'ivory',4,4,null,blink);
+   add(eyeSurface(cx,cy,cz,side,'iris'),'iris',4,4,null,blink);
+   add(eyeSurface(cx,cy,cz,side,'pupil'),'eye',4,4,null,blink);
+   add(ellipsoid(cx-.006,cy+.006,.138,.0035,.003,.001,8),'ivory',4,4,null,blink);
+   const eyelid=[[-.052,0],[-.029,.014],[0,.018],[.029,.014],[.052,0]].map(([x,y])=>[cx+x,cy+y+side*x*.095,.127+(1-Math.abs(x)/.057)*.008]);
+   add(tube(eyelid,.0035,14,5),'eye',4,4,null,(x,y,z)=>({blink:[0,(cy-y)*1.05,0],smile:[0,.001,0]}));
+   const lid=eyelid.map(([x,y,z])=>[x,y+.006,z-.001]);
+   add(ribbon(lid,[.001,.005,.006,.005,.001],.001),'skin',4,4,null,(x,y,z)=>({blink:[0,(cy+.006-y)*.8,.002],smile:[0,.001,0]}));
+   for(let j=0;j<2;j++){const x=cx+side*(.043+j*.006);add(tube([[x,cy+.009,.129],[x+side*.009,cy+.019+j*.003,.132]],.0026,2,4),'eye',4,4,null,blink);}
+   add(tube([[cx-.05,cy-.004,.126],[cx,cy-.014,.134],[cx+.05,cy+.003,.126]],.0021,12,4),'lip',4,4,null,blink);
+   const browPoints=[[side*.019,2.079,.124],[side*.048,2.09,.13],[side*.080,2.091,.123],[side*.111,2.079,.109],[side*.124,2.072,.097]];
    // A tapered, planar eyebrow instead of cylindrical rods.
-   const brow=ribbon(side<0?[...browPoints].reverse():browPoints,side<0?[.002,.006,.009,.008,.005]:[.005,.008,.009,.006,.002]);
+   const brow=ribbon(side<0?[...browPoints].reverse():browPoints,side<0?[.002,.007,.011,.01,.006]:[.006,.01,.011,.007,.002]);
    this.materials.hair.side=T.DoubleSide;add(brow,'hair',4,4,null,(x,y,z)=>({smile:[0,.004*Math.abs(x)/.13,0]}));
    const e=new T.TorusGeometry(.028,.005,6,14);e.translate(side*.17,1.933,.006);add(e,'gold',4);
    const charm=heart(.010);charm.translate(side*.17,1.902,.006);add(charm,'pink',4);
@@ -137,36 +159,47 @@ export class MariamRig{
   for(const side of [-1,1])add(ellipsoid(side*.016,1.975,.164,.005,.0025,.0025,8),'iris',4);
   // Sculpted Cupid's bow and lower lip; restrained smile, no permanent wide grin.
   const lipMorph=(x,y,z)=>({smile:[Math.sign(x)*.008*smooth(.012,.05,Math.abs(x)),.009*smooth(.015,.05,Math.abs(x)),-.002*smooth(.01,.05,Math.abs(x))]});
-  add(ribbon([[-.047,1.935,.112],[-.027,1.936,.127],[-.012,1.941,.134],[0,1.937,.138],[.012,1.941,.134],[.027,1.936,.127],[.047,1.935,.112]],[.001,.006,.006,.005,.006,.006,.001],.002),'lip',4,4,null,lipMorph);
-  add(tube([[-.044,1.934,.114],[-.024,1.929,.132],[0,1.927,.141],[.024,1.929,.132],[.044,1.934,.114]],.008,16,6),'lip',4,4,null,lipMorph);
-  add(tube([[-.034,1.934,.126],[0,1.932,.144],[.034,1.934,.126]],.0027,12,4),'eye',4,4,null,lipMorph);
+  add(ribbon([[-.046,1.938,.110],[-.027,1.934,.122],[-.012,1.939,.129],[0,1.935,.132],[.012,1.939,.129],[.027,1.934,.122],[.046,1.938,.110]],[.0007,.004,.005,.004,.005,.004,.0007],.001),'lip',4,4,null,lipMorph);
+  add(tube([[-.043,1.937,.113],[-.024,1.929,.125],[0,1.927,.134],[.024,1.929,.125],[.043,1.937,.113]],.005,16,6),'lip',4,4,null,lipMorph);
+  add(tube([[-.034,1.935,.122],[0,1.932,.137],[.034,1.935,.122]],.0017,12,4),'eye',4,4,null,lipMorph);
   add(tube([[-.078,1.785,.033],[-.07,1.735,.105],[0,1.692,.141],[.07,1.735,.105],[.078,1.785,.033]],.0045,20,5),'gold',2);
   const pendant=heart(.023);pendant.translate(0,1.683,.146);add(pendant,'pink',2);
-  // Parted scalp joins flowing locks, avoiding the two raised 'horns' of V1.
-  add(loft([[2.045,.163,.13,0,-.037],[2.105,.181,.147,0,-.029],[2.16,.176,.152,0,-.029],[2.206,.142,.129,0,-.026],[2.24,.086,.087,0,-.023],[2.255,.003,.003,0,-.021]],30),'hair',4);
-  // Back and side mantle: roots follow the head curvature, curls widen below the ears.
-  for(let i=0;i<66;i++){
-   const ring=i%3,j=Math.floor(i/3),a=.67+(j/21)*(TAU-1.34),side=Math.sin(a)>=0?1:-1;
-   const rootY=2.22-ring*.047,baseX=Math.sin(a)*(.10+ring*.039),baseZ=Math.cos(a)*(.10+ring*.038)-.032;
-   const extent=.212+ring*.018,px=Math.sin(a)*extent,pz=Math.cos(a)*extent-.057;
-   const length=.96+(i%5)*.043-ring*.016,pts=[];
-   for(let k=0;k<=42;k++){
-    const t=k/42,q=smooth(0,.2,t),wave=t*TAU*(5+(i%3)*.45)+i*.81;
-    const radius=(.018+.004*(i%3))*smooth(.025,.12,t)*(1-.45*smooth(.8,1,t));
-    const spread=Math.sin(t*Math.PI)*(.043+ring*.009);
+  // Curved hairline and welded normals remove the artificial centre split.
+  add(scalp(),'hair',4);
+  for(let i=0;i<72;i++){
+   const ring=i%3,j=Math.floor(i/3),a=.68+(j/23)*(TAU-1.36),side=Math.sin(a)>=0?1:-1;
+   const rootY=2.22-ring*.04,baseX=Math.sin(a)*(.10+ring*.036),baseZ=Math.cos(a)*(.103+ring*.035)-.032;
+   const extent=.208+ring*.021,px=Math.sin(a)*extent,pz=Math.cos(a)*extent-.057;
+   const length=1.015+(i%7)*.024-ring*.009,pts=[];
+   for(let k=0;k<=40;k++){
+    const t=k/40,q=smooth(0,.15,t),wave=t*TAU*(5+(i%3)*.16)+i*.93;
+    const radius=(.022+.003*(i%3))*smooth(.015,.1,t)*(1-.2*smooth(.85,1,t)),spread=Math.sin(t*Math.PI)*(.043+ring*.009);
     pts.push([baseX*(1-q)+px*q+Math.sin(a)*spread+Math.cos(wave)*radius,rootY-t*length,baseZ*(1-q)+pz*q-Math.sin(t*Math.PI)*.024+Math.sin(wave)*radius]);
    }
-   add(curl(pts,i),i%9===0?'hairLight':'hair',4,pz<-.12?19:side<0?17:18,(_,y)=>smooth(2.02,1.29,y));
+   add(curl(pts,i),i%11===0?'hairLight':'hair',4,pz<-.12?19:side<0?17:18,(_,y)=>smooth(2.02,1.29,y));
   }
-  // Six face-framing, S-shaped locks grow from the part and sweep around the cheeks.
-  for(const side of [-1,1])for(let j=0;j<3;j++){
+  // Rippled inner volume fills holes behind the curls while keeping the face opening clear.
+  const mantleP=[],mantleIX=[],rows=9,cols=30;
+  for(let k=0;k<=rows;k++)for(let j=0;j<=cols;j++){
+   const t=k/rows,a=.93+j/cols*(TAU-1.86),r=.195+Math.sin(t*Math.PI)*.025+.009*Math.sin(a*19+t*24);
+   mantleP.push(Math.sin(a)*r,2.105-t*1.02,Math.cos(a)*r-.061);
+  }
+  for(let k=0;k<rows;k++)for(let j=0;j<cols;j++){const a=k*(cols+1)+j,b=a+cols+1;mantleIX.push(a,a+1,b,b,a+1,b+1);}
+  const mantle=new T.BufferGeometry();mantle.setAttribute('position',new T.Float32BufferAttribute(mantleP,3));mantle.setIndex(mantleIX);mantle.computeVertexNormals();add(mantle,'hair',4,19,(_,y)=>smooth(2.02,1.29,y));
+  // Twelve swept locks cover the crown and temple transition.
+  for(const side of [-1,1])for(let j=0;j<6;j++){
+   const guides=new T.CatmullRomCurve3([
+    new T.Vector3(side*(.014+j*.018),2.25-j*.005,.079-j*.01),
+    new T.Vector3(side*(.105+j*.014),2.205-j*.008,.15-j*.006),
+    new T.Vector3(side*(.195+j*.01),2.095-j*.01,.116-j*.009),
+    new T.Vector3(side*(.239+j*.01),1.81,.075-j*.012),
+    new T.Vector3(side*(.228+j*.009),1.19+(j%3)*.023,.06-j*.013)
+   ]);
    const pts=[];for(let k=0;k<=40;k++){
-    const t=k/40,join=smooth(0,.22,t),wave=t*TAU*(5+j*.3)+j;
-    const x=side*(.025+j*.032+join*(.165-j*.016)+Math.sin(t*Math.PI)*.067);
-    const z=.075+Math.sin(t*Math.PI)*.022-t*.017;
-    pts.push([x+Math.cos(wave)*.02*join,2.241-j*.019-t*(1.02-j*.04),z+Math.sin(wave)*.019*join]);
+    const t=k/40,base=guides.getPoint(t),q=smooth(.01,.12,t),wave=t*TAU*(5+j*.08)+j*.7;
+    pts.push([base.x+Math.cos(wave)*.021*q,base.y,base.z+Math.sin(wave)*.023*q]);
    }
-   add(curl(pts,j+side*4),j===0?'hairLight':'hair',4,side<0?17:18,(_,y)=>smooth(2.02,1.34,y));
+   add(curl(pts,j+side*4),j===1?'hairLight':'hair',4,side<0?17:18,(_,y)=>smooth(2.02,1.34,y));
   }
   // Sunglasses: rounded cat-eye frames, real arms, dark inset lenses.
   for(const side of [-1,1]){
