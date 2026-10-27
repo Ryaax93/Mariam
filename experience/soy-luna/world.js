@@ -7,9 +7,9 @@ function tex(w,h,paint){const c=document.createElement('canvas');c.width=w;c.hei
 function curve(points,r=.035,sides=6){return new T.TubeGeometry(new T.CatmullRomCurve3(points.map(p=>V(...p))),Math.max(8,points.length*3),r,sides,false);}
 function rng(seed){return()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};}
 function merge(list){
- const p=[],n=[],uv=[];let allUV=true;
- for(const original of list){const g=original.index?original.toNonIndexed():original;const a=g.attributes; p.push(...a.position.array);n.push(...a.normal.array);if(a.uv)uv.push(...a.uv.array);else allUV=false;if(g!==original)g.dispose();}
- const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p,3));g.setAttribute('normal',new T.Float32BufferAttribute(n,3));if(allUV)g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));return g;
+ const p=[],n=[],uv=[],colors=[];let allUV=true;
+ for(const original of list){const g=original.index?original.toNonIndexed():original;const a=g.attributes; p.push(...a.position.array);n.push(...a.normal.array);if(a.color)colors.push(...a.color.array);else for(let i=0;i<a.position.count;i++)colors.push(1,1,1);if(a.uv)uv.push(...a.uv.array);else allUV=false;if(g!==original)g.dispose();}
+ const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p,3));g.setAttribute('normal',new T.Float32BufferAttribute(n,3));g.setAttribute('color',new T.Float32BufferAttribute(colors,3));if(allUV)g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));return g;
 }
 export class LunaWorld{
  constructor(scene){
@@ -161,8 +161,10 @@ export class LunaWorld{
   root.updateMatrixWorld(true);const groups=new Map(),remove=[],inverse=new T.Matrix4().copy(root.matrixWorld).invert();
   const partition=root===this.decor||root===this.detail;
   root.traverse(m=>{if(!m.isMesh||m.isInstancedMesh||m.userData.dynamic)return;for(let p=m.parent;p&&p!==root;p=p.parent)if(p.userData.dynamic)return;if(root!==this.wheel&&this.wheel.getObjectById(m.id))return;
-   const g=m.geometry.clone();g.applyMatrix4(new T.Matrix4().multiplyMatrices(inverse,m.matrixWorld));g.computeBoundingBox();const z=g.boundingBox.getCenter(new T.Vector3()).z,zone=partition?Math.floor(z/48):0,key=m.material.uuid+':'+zone;
-   if(!groups.has(key))groups.set(key,{mat:m.material,geos:[],zone});groups.get(key).geos.push(g);remove.push(m);
+   const g=m.geometry.clone();g.applyMatrix4(new T.Matrix4().multiplyMatrices(inverse,m.matrixWorld));g.computeBoundingBox();const z=g.boundingBox.getCenter(new T.Vector3()).z,zone=partition?Math.floor(z/48):0,textured=!!(m.material.map||m.material.bumpMap),key=(textured?m.material.uuid:'vertex:'+m.material.roughness+':'+m.material.metalness+':'+m.material.side)+':'+zone;
+   // Bake linear material colors into vertices; preserve textures and bump maps.
+   if(!textured&&!g.attributes.color){const colors=new Float32Array(g.attributes.position.count*3),c=m.material.color;for(let i=0;i<colors.length;i+=3){colors[i]=c.r;colors[i+1]=c.g;colors[i+2]=c.b;}g.setAttribute('color',new T.BufferAttribute(colors,3));}
+   if(!groups.has(key)){const mat=textured?m.material:new T.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:m.material.roughness,metalness:m.material.metalness,side:m.material.side});groups.set(key,{mat,geos:[],zone});}groups.get(key).geos.push(g);remove.push(m);
   });
   remove.forEach(m=>{m.removeFromParent();m.geometry.dispose();});
   for(const {mat,geos,zone} of groups.values()){const m=new T.Mesh(merge(geos),mat);m.receiveShadow=true;m.castShadow=true;root.add(m);if(partition){m.geometry.computeBoundingBox();this.chunks.push({mesh:m,min:m.geometry.boundingBox.min.z,max:m.geometry.boundingBox.max.z});}geos.forEach(g=>g.dispose());}

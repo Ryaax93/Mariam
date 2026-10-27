@@ -42,16 +42,21 @@ try{
  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[a,b]});await page.locator('#pause').click();d=await page.evaluate(()=>mariamLuna());check('pause releases all pointer owners',d.contacts.contacts===0&&d.contacts.captures===0&&!d.input.jump);await cdp.send('Input.dispatchTouchEvent',{type:'touchCancel',touchPoints:[]});await page.locator('#resume').click();
  await page.locator('#pause').click();await page.locator('#restart').click();
  const held=new Set();async function press(code,want){if(want&&!held.has(code)){await page.keyboard.down(code);held.add(code);}else if(!want&&held.has(code)){await page.keyboard.up(code);held.delete(code);}}
- const deadline=Date.now()+180000;let checkpoints=0,reloaded=false,fallChecked=false;const seenScenes=new Set();
+ async function playShot(name){
+  for(const k of [...held])await press(k,false);
+  await page.locator('#pause').click();await page.locator('#pauseScreen').evaluate(e=>e.style.visibility='hidden');
+  await shot(page,name);await page.locator('#pauseScreen').evaluate(e=>e.style.visibility='');await page.locator('#resume').click();
+ }
+ const deadline=Date.now()+240000;let checkpoints=0,reloaded=false,fallChecked=false;const seenScenes=new Set();
  while(Date.now()<deadline){
   d=await page.evaluate(()=>mariamLuna());if(d.state.status==='won'||d.state.status==='lost')break;
   const g=(await import('../track.js')).GATES.find(g=>!d.state.passed.includes(g.id));let target=g?.lane||0;
   if(d.state.s>114&&d.state.s<123)target=0;
   const steer=(target-d.state.lane)*1.8-d.state.vl*.7;
-  await press('ArrowUp',true);await press('ArrowLeft',steer<-.28);await press('ArrowRight',steer>.28);await press('Space',d.state.s>114.7&&d.state.s<116);
-  if(d.state.s>=40&&!seenScenes.has(40)){seenScenes.add(40);await shot(page,'play-40');}
-  if(d.state.s>=97&&!seenScenes.has(97)){seenScenes.add(97);await shot(page,'play-97');}
-  if(d.state.checkpoint>checkpoints){checkpoints=d.state.checkpoint;await shot(page,'checkpoint-'+checkpoints);}
+  await Promise.all([press('ArrowUp',true),press('ArrowLeft',steer<-.4),press('ArrowRight',steer>.4),press('Space',d.state.s>114.5&&d.state.s<116)]);
+  if(d.state.s>=40&&!seenScenes.has(40)){seenScenes.add(40);await playShot('play-40');}
+  if(d.state.s>=97&&!seenScenes.has(97)){seenScenes.add(97);await playShot('play-97');}
+  if(d.state.checkpoint>checkpoints){checkpoints=d.state.checkpoint;await playShot('checkpoint-'+checkpoints);}
   if(d.state.checkpoint===74&&!reloaded){
    for(const k of [...held])await press(k,false);
    await page.locator('#pause').click();const savedState=await page.evaluate(()=>mariamLuna().state);
@@ -65,7 +70,7 @@ try{
    while(Date.now()<end){d=await page.evaluate(()=>mariamLuna());if(d.state.falls>falls)break;await page.waitForTimeout(60);}
    await press('ArrowRight',false);check('steering off edge charges exactly one heart',d.state.falls===falls+1&&d.state.hp===hp-1);
    await page.waitForFunction(()=>mariamLuna().state.s===144&&mariamLuna().state.y===0,null,{timeout:8000});d=await page.evaluate(()=>mariamLuna());check('fall returns to checkpoint with camera',d.state.hp===hp-1&&Math.abs(d.camera.body.x)<1&&Math.abs(d.camera.body.y)<1);
-   await shot(page,'respawn-144');fallChecked=true;continue;
+   await playShot('respawn-144');fallChecked=true;continue;
   }
   await page.waitForTimeout(50);
  }
@@ -91,6 +96,7 @@ try{
  // Static detailed real-3D front/profile/back capture uses a dedicated viewer, not gameplay proof.
  await page.goto(url+'test/character.html');await page.waitForFunction(()=>window.rigReviewReady);await shot(page,'character-front');await page.evaluate(()=>setReviewPortrait());await shot(page,'character-face');await page.goto(url+'test/character.html');await page.waitForFunction(()=>window.rigReviewReady);
  for(const [name,angle] of [['profile',Math.PI/2],['back',Math.PI]]){await page.evaluate(a=>window.setReviewAngle(a),angle);await page.waitForTimeout(120);await shot(page,'character-'+name);}
+ for(const name of ['rotation','etoile','arabesque','croise','rythme']){await page.evaluate(n=>setReviewPose(n,.45),name);await shot(page,'pose-'+name);}
  const video=page.video();await context.close();if(video)await video.saveAs(path.join(out,'browser-session.webm'));await browser.close();browser=null;
  try{
   const wb=await webkit.launch();const wc=await wb.newContext({viewport:{width:852,height:393},hasTouch:true,isMobile:true});const wp=await wc.newPage();const errors=[];wp.on('pageerror',e=>errors.push(String(e)));await wp.goto(url);await wp.waitForFunction(()=>!!window.mariamLuna,{timeout:20000});await wp.locator('#start').click();await wp.keyboard.down('ArrowUp');await wp.waitForTimeout(1500);await wp.keyboard.up('ArrowUp');const wd=await wp.evaluate(()=>mariamLuna());report.checks.push({name:'WebKit Linux movement',pass:wd.state.s>1&&errors.length===0,details:errors});await shot(wp,'webkit-linux');await wb.close();

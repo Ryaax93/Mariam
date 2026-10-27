@@ -34,6 +34,7 @@ jobs:
             npx playwright install --with-deps chromium webkit
             node soy-luna/test/prepare-baseline.mjs
             node soy-luna/test/unit.mjs
+            node soy-luna/test/geometry.mjs
           else
             echo "Preproduction only. No new gameplay test has run."
           fi
