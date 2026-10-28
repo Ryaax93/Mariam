@@ -17,3 +17,7 @@ Mariam est un vrai modèle skinné, provisoire. Le visage et les animations arti
 Tests : depuis `experience/`, `npm ci && npm test` pour les tests classiques, `node soy-luna/test/unit.mjs` pour la simulation et le rig. Le workflow Soy Luna private review installe Playwright 1.55.0 / Chromium / WebKit et exécute `node soy-luna/test/browser.mjs`. Les preuves sont dans evidence/. Aucun contrôle de production ne permet de téléporter Mariam ou forcer la victoire.
 
 `test/character.html` : contrôle du vrai modèle. `?camera-test=before` et `?camera-test=after` : scène d'occultation volontaire, distincte du parcours normal.
+
+## Reprise V2
+
+Voir [la bible et le plan V2](V2-PRODUCTION.md), [les résultats V2](V2-VALIDATION.md) et [le carnet de captures](review.html). Les rapports précédents restent les archives de la V1.

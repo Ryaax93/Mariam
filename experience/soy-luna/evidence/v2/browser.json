@@ -1,0 +1,860 @@
+{
+  "source": "4df9073fe853484c18ce56c860f8e4a0a6ef4f5f",
+  "platform": "linux",
+  "note": "Linux browsers / software GPU, not physical iPhone Safari",
+  "checks": [
+    {
+      "name": "boot WebGL",
+      "pass": true
+    },
+    {
+      "name": "forward movement",
+      "pass": true,
+      "details": {
+        "version": "luna-v2",
+        "mode": "playing",
+        "portrait": false,
+        "state": {
+          "s": 4.749304804430579,
+          "lane": 0,
+          "y": 0,
+          "v": 6.910543555000471,
+          "vl": 0,
+          "vy": 0,
+          "grounded": true,
+          "status": "playing",
+          "time": 0.9999999999999989,
+          "elapsed": 2.2777999999999885,
+          "hp": 3,
+          "notes": [],
+          "passed": [],
+          "checkpoint": 0,
+          "score": 0,
+          "falls": 0,
+          "hits": 0,
+          "trickName": "rotation",
+          "trickPhase": 0,
+          "figures": [],
+          "roses": []
+        },
+        "input": {
+          "forward": 0,
+          "steer": 0,
+          "jump": false,
+          "boost": false
+        },
+        "contacts": {
+          "contacts": 0,
+          "stick": null,
+          "captures": 0
+        },
+        "rig": {
+          "bones": 20,
+          "skinnedMeshes": 12,
+          "triangles": 43254,
+          "morphTargets": [
+            "clignement",
+            "sourire"
+          ],
+          "figures": [
+            "rotation",
+            "etoile",
+            "arabesque",
+            "croise",
+            "rythme"
+          ],
+          "status": "reference-fidelity-unvalidated"
+        },
+        "render": {
+          "calls": 112,
+          "triangles": 229330,
+          "geometries": 108,
+          "textures": 19,
+          "width": 852,
+          "height": 393
+        },
+        "camera": {
+          "body": {
+            "x": -0.00167821015104855,
+            "y": -0.056816418634606985,
+            "z": 0.9797508848358926
+          },
+          "landing": {
+            "x": 0.00003757288626743987,
+            "y": -0.048646282617944576,
+            "z": 0.9857969922154237
+          },
+          "position": [
+            -0.37656043382466003,
+            4.15,
+            4.429511048655927
+          ],
+          "faded": []
+        },
+        "performance": {
+          "frames": 4,
+          "p50": 466.60000000000036,
+          "p95": 466.6999999999989,
+          "fps": 1.7560804284836335,
+          "droppedSimulation": 1.2777999999999883
+        },
+        "save": true,
+        "storageOK": true,
+        "audio": {
+          "state": "running",
+          "enabled": true,
+          "notes": 3,
+          "steps": 5
+        },
+        "errors": []
+      }
+    },
+    {
+      "name": "rig is skinned",
+      "pass": true
+    },
+    {
+      "name": "original soundtrack scheduled after gesture",
+      "pass": true,
+      "details": {
+        "state": "running",
+        "enabled": true,
+        "notes": 3,
+        "steps": 5
+      }
+    },
+    {
+      "name": "jump above ground",
+      "pass": true,
+      "details": {
+        "s": 7.763273254900001,
+        "lane": 0,
+        "y": 1.0895833333333345,
+        "v": 5.2490562407103125,
+        "vl": 0,
+        "vy": -1.999999999999997,
+        "grounded": false,
+        "status": "playing",
+        "time": 1.4999999999999971,
+        "elapsed": 5.844299999999988,
+        "hp": 3,
+        "notes": [],
+        "passed": [],
+        "checkpoint": 0,
+        "score": 0,
+        "falls": 0,
+        "hits": 0,
+        "trickName": "rotation",
+        "trickPhase": 0.6538461538461547,
+        "figures": [],
+        "roses": []
+      }
+    },
+    {
+      "name": "pause freezes simulation",
+      "pass": true
+    },
+    {
+      "name": "two-finger steering and jump",
+      "pass": true
+    },
+    {
+      "name": "three simultaneous contacts",
+      "pass": true
+    },
+    {
+      "name": "release jump retains independent joystick and boost",
+      "pass": true,
+      "details": {
+        "input": {
+          "forward": 1,
+          "steer": 0,
+          "jump": false,
+          "boost": true
+        },
+        "contacts": {
+          "contacts": 2,
+          "stick": 2,
+          "captures": 2
+        },
+        "trace": [
+          {
+            "type": "pointerdown",
+            "id": 2,
+            "target": "stick",
+            "touches": null
+          },
+          {
+            "type": "pointerdown",
+            "id": 3,
+            "target": "jump",
+            "touches": null
+          },
+          {
+            "type": "pointerdown",
+            "id": 4,
+            "target": "boost",
+            "touches": null
+          },
+          {
+            "type": "pointerup",
+            "id": 3,
+            "target": "jump",
+            "touches": null
+          },
+          {
+            "type": "lostpointercapture",
+            "id": 3,
+            "target": "jump",
+            "touches": null
+          },
+          {
+            "type": "touchend",
+            "target": "jump",
+            "touches": [
+              {
+                "id": 1,
+                "target": "stick"
+              },
+              {
+                "id": 3,
+                "target": "boost"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "joystick tracks outside its original zone",
+      "pass": true,
+      "details": {
+        "input": {
+          "forward": 0.687744647910783,
+          "steer": -0.7259526839058267,
+          "jump": false,
+          "boost": true
+        },
+        "contacts": {
+          "contacts": 2,
+          "stick": 2,
+          "captures": 2
+        }
+      }
+    },
+    {
+      "name": "release outside clears joystick while boost held",
+      "pass": true,
+      "details": {
+        "input": {
+          "forward": 0,
+          "steer": 0,
+          "jump": false,
+          "boost": true
+        },
+        "contacts": {
+          "contacts": 1,
+          "stick": null,
+          "captures": 1
+        }
+      }
+    },
+    {
+      "name": "touch cancel clears input",
+      "pass": true
+    },
+    {
+      "name": "pause releases all pointer owners",
+      "pass": true
+    },
+    {
+      "name": "continue offered after reload",
+      "pass": true
+    },
+    {
+      "name": "reload resumes checkpoint and collected notes",
+      "pass": true
+    },
+    {
+      "name": "steering off edge charges exactly one heart",
+      "pass": true
+    },
+    {
+      "name": "fall returns to checkpoint with camera",
+      "pass": true
+    },
+    {
+      "name": "checkpoint reload and fall exercised",
+      "pass": true
+    },
+    {
+      "name": "full course won by keyboard events",
+      "pass": true,
+      "details": {
+        "s": 220.03156111185794,
+        "lane": 0.0679511575192181,
+        "y": 0,
+        "v": 7.599999999894453,
+        "vl": -0.003113074882363631,
+        "vy": 0,
+        "grounded": true,
+        "status": "won",
+        "time": 45.341666666664736,
+        "elapsed": 50.86600000000002,
+        "hp": 1,
+        "notes": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "passed": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "checkpoint": 144,
+        "score": 2471,
+        "falls": 2,
+        "hits": 2,
+        "trickName": "rotation",
+        "trickPhase": 0,
+        "figures": [
+          "rotation"
+        ],
+        "roses": []
+      }
+    },
+    {
+      "name": "course collects notes",
+      "pass": true
+    },
+    {
+      "name": "three legacy save strings unchanged",
+      "pass": true
+    },
+    {
+      "name": "no overflow 667x375",
+      "pass": true
+    },
+    {
+      "name": "rotate message 667x375",
+      "pass": true
+    },
+    {
+      "name": "no overflow 932x430",
+      "pass": true
+    },
+    {
+      "name": "rotate message 932x430",
+      "pass": true
+    },
+    {
+      "name": "no overflow 393x852",
+      "pass": true
+    },
+    {
+      "name": "rotate message 393x852",
+      "pass": true
+    },
+    {
+      "name": "rotation clears held direction and pauses",
+      "pass": true
+    },
+    {
+      "name": "held jump earns a figure in actual gameplay",
+      "pass": true
+    },
+    {
+      "name": "clear track and opaque gameplay at 40",
+      "pass": true,
+      "details": {
+        "version": "V2",
+        "s": 40,
+        "position": [
+          4.70685508402582,
+          4.5,
+          -32.32211069324898
+        ],
+        "landscapeAboveTrack": [],
+        "playMaterialsOpaque": true,
+        "calls": 94,
+        "triangles": 224653
+      }
+    },
+    {
+      "name": "clear track and opaque gameplay at 83",
+      "pass": true,
+      "details": {
+        "version": "V2",
+        "s": 83,
+        "position": [
+          6.8828302275282525,
+          4.5,
+          -75.62599369640627
+        ],
+        "landscapeAboveTrack": [],
+        "playMaterialsOpaque": true,
+        "calls": 76,
+        "triangles": 222628
+      }
+    },
+    {
+      "name": "clear track and opaque gameplay at 97",
+      "pass": true,
+      "details": {
+        "version": "V2",
+        "s": 97,
+        "position": [
+          1.7836618291639232,
+          4.5,
+          -89.5213612706254
+        ],
+        "landscapeAboveTrack": [],
+        "playMaterialsOpaque": true,
+        "calls": 69,
+        "triangles": 208602
+      }
+    },
+    {
+      "name": "clear track and opaque gameplay at 181",
+      "pass": true,
+      "details": {
+        "version": "V2",
+        "s": 181,
+        "position": [
+          -5.487665697684287,
+          4.5,
+          -173.22903101746826
+        ],
+        "landscapeAboveTrack": [],
+        "playMaterialsOpaque": true,
+        "calls": 42,
+        "triangles": 140035
+      }
+    },
+    {
+      "name": "body and landing framed",
+      "pass": true
+    },
+    {
+      "name": "WebKit Linux movement",
+      "pass": true,
+      "details": []
+    },
+    {
+      "name": "no Chromium JavaScript / shader errors",
+      "pass": true,
+      "details": []
+    }
+  ],
+  "errors": [],
+  "captures": [
+    "welcome.jpg",
+    "skating.jpg",
+    "play-40.jpg",
+    "checkpoint-74.jpg",
+    "play-97.jpg",
+    "checkpoint-144.jpg",
+    "respawn-144.jpg",
+    "finish.jpg",
+    "viewport-667x375.jpg",
+    "viewport-932x430.jpg",
+    "viewport-393x852.jpg",
+    "figure-landed.jpg",
+    "compare-40-v1.jpg",
+    "compare-40-v2.jpg",
+    "compare-83-v1.jpg",
+    "compare-83-v2.jpg",
+    "compare-97-v1.jpg",
+    "compare-97-v2.jpg",
+    "compare-181-v1.jpg",
+    "compare-181-v2.jpg",
+    "camera-before.jpg",
+    "camera-after.jpg",
+    "character-front.jpg",
+    "character-face.jpg",
+    "character-profile.jpg",
+    "character-back.jpg",
+    "pose-rotation.jpg",
+    "pose-etoile.jpg",
+    "pose-arabesque.jpg",
+    "pose-croise.jpg",
+    "pose-rythme.jpg",
+    "webkit-linux.jpg"
+  ],
+  "measurements": [
+    {
+      "scenario": "full-course-low",
+      "version": "luna-v2",
+      "mode": "result",
+      "portrait": false,
+      "state": {
+        "s": 220.03156111185794,
+        "lane": 0.0679511575192181,
+        "y": 0,
+        "v": 7.599999999894453,
+        "vl": -0.003113074882363631,
+        "vy": 0,
+        "grounded": true,
+        "status": "won",
+        "time": 45.341666666664736,
+        "elapsed": 50.86600000000002,
+        "hp": 1,
+        "notes": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "passed": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "checkpoint": 144,
+        "score": 2471,
+        "falls": 2,
+        "hits": 2,
+        "trickName": "rotation",
+        "trickPhase": 0,
+        "figures": [
+          "rotation"
+        ],
+        "roses": []
+      },
+      "input": {
+        "forward": 0,
+        "steer": 0,
+        "jump": false,
+        "boost": false
+      },
+      "contacts": {
+        "contacts": 0,
+        "stick": null,
+        "captures": 0
+      },
+      "rig": {
+        "bones": 20,
+        "skinnedMeshes": 12,
+        "triangles": 43254,
+        "morphTargets": [
+          "clignement",
+          "sourire"
+        ],
+        "figures": [
+          "rotation",
+          "etoile",
+          "arabesque",
+          "croise",
+          "rythme"
+        ],
+        "status": "reference-fidelity-unvalidated"
+      },
+      "render": {
+        "calls": 25,
+        "triangles": 91802,
+        "geometries": 96,
+        "textures": 20,
+        "width": 852,
+        "height": 393
+      },
+      "camera": {
+        "body": {
+          "x": 0.002273201239398233,
+          "y": -0.15323194681198696,
+          "z": 0.9787183804798133
+        },
+        "landing": {
+          "x": 0.00235819797962737,
+          "y": -0.10548172384638546,
+          "z": 0.9858864805936856
+        },
+        "position": [
+          1.384907099499672,
+          4.15,
+          -211.68566881078593
+        ],
+        "faded": []
+      },
+      "performance": {
+        "frames": 195,
+        "p50": 183.40000000000146,
+        "p95": 383.40000000000146,
+        "fps": 5.089749245020522,
+        "droppedSimulation": 4.33300000000001
+      },
+      "save": false,
+      "storageOK": true,
+      "audio": {
+        "state": "running",
+        "enabled": true,
+        "notes": 5,
+        "steps": 179
+      },
+      "errors": []
+    },
+    {
+      "scenario": "comparison",
+      "version": "V1",
+      "s": 40,
+      "position": [
+        4.70685508402582,
+        4.5,
+        -32.32211069324898
+      ],
+      "landscapeAboveTrack": [
+        {
+          "y": 1.398394714950098,
+          "name": "Mesh"
+        }
+      ],
+      "playMaterialsOpaque": true,
+      "calls": 200,
+      "triangles": 102816
+    },
+    {
+      "scenario": "comparison",
+      "version": "V2",
+      "s": 40,
+      "position": [
+        4.70685508402582,
+        4.5,
+        -32.32211069324898
+      ],
+      "landscapeAboveTrack": [],
+      "playMaterialsOpaque": true,
+      "calls": 94,
+      "triangles": 224653
+    },
+    {
+      "scenario": "comparison",
+      "version": "V1",
+      "s": 83,
+      "position": [
+        6.8828302275282525,
+        4.5,
+        -75.62599369640627
+      ],
+      "landscapeAboveTrack": [],
+      "playMaterialsOpaque": true,
+      "calls": 160,
+      "triangles": 90620
+    },
+    {
+      "scenario": "comparison",
+      "version": "V2",
+      "s": 83,
+      "position": [
+        6.8828302275282525,
+        4.5,
+        -75.62599369640627
+      ],
+      "landscapeAboveTrack": [],
+      "playMaterialsOpaque": true,
+      "calls": 76,
+      "triangles": 222628
+    },
+    {
+      "scenario": "comparison",
+      "version": "V1",
+      "s": 97,
+      "position": [
+        1.7836618291639232,
+        4.5,
+        -89.5213612706254
+      ],
+      "landscapeAboveTrack": [
+        {
+          "y": 1.8648200189292323,
+          "name": "Mesh"
+        }
+      ],
+      "playMaterialsOpaque": true,
+      "calls": 162,
+      "triangles": 92746
+    },
+    {
+      "scenario": "comparison",
+      "version": "V2",
+      "s": 97,
+      "position": [
+        1.7836618291639232,
+        4.5,
+        -89.5213612706254
+      ],
+      "landscapeAboveTrack": [],
+      "playMaterialsOpaque": true,
+      "calls": 69,
+      "triangles": 208602
+    },
+    {
+      "scenario": "comparison",
+      "version": "V1",
+      "s": 181,
+      "position": [
+        -5.487665697684287,
+        4.5,
+        -173.22903101746826
+      ],
+      "landscapeAboveTrack": [
+        {
+          "y": 0.8045508557699108,
+          "name": "Mesh"
+        }
+      ],
+      "playMaterialsOpaque": true,
+      "calls": 79,
+      "triangles": 66148
+    },
+    {
+      "scenario": "comparison",
+      "version": "V2",
+      "s": 181,
+      "position": [
+        -5.487665697684287,
+        4.5,
+        -173.22903101746826
+      ],
+      "landscapeAboveTrack": [],
+      "playMaterialsOpaque": true,
+      "calls": 42,
+      "triangles": 140035
+    },
+    {
+      "scenario": "camera-fixture",
+      "version": "luna-v2",
+      "mode": "pause",
+      "portrait": false,
+      "state": {
+        "s": 0,
+        "lane": 0,
+        "y": 0,
+        "v": 0,
+        "vl": 0,
+        "vy": 0,
+        "grounded": true,
+        "status": "paused",
+        "time": 0.5500000000000005,
+        "elapsed": 1.5517999999999765,
+        "hp": 3,
+        "notes": [],
+        "passed": [],
+        "checkpoint": 0,
+        "score": 0,
+        "falls": 0,
+        "hits": 0,
+        "trickName": "rotation",
+        "trickPhase": 0,
+        "figures": [],
+        "roses": []
+      },
+      "input": {
+        "forward": 0,
+        "steer": 0,
+        "jump": false,
+        "boost": false
+      },
+      "contacts": {
+        "contacts": 0,
+        "stick": null,
+        "captures": 0
+      },
+      "rig": {
+        "bones": 20,
+        "skinnedMeshes": 12,
+        "triangles": 43254,
+        "morphTargets": [
+          "clignement",
+          "sourire"
+        ],
+        "figures": [
+          "rotation",
+          "etoile",
+          "arabesque",
+          "croise",
+          "rythme"
+        ],
+        "status": "reference-fidelity-unvalidated"
+      },
+      "render": {
+        "calls": 98,
+        "triangles": 128954,
+        "geometries": 95,
+        "textures": 14,
+        "width": 852,
+        "height": 393
+      },
+      "camera": {
+        "body": {
+          "x": 0.0004254616804411155,
+          "y": -0.1235759299729613,
+          "z": 0.9752953354460665
+        },
+        "landing": {
+          "x": -5.144502554776774e-18,
+          "y": -0.1180704699455742,
+          "z": 0.9825500315664494
+        },
+        "position": [
+          -0.5769158256720016,
+          4.15,
+          7.377477084348633
+        ],
+        "faded": [
+          "Décor de contrôle"
+        ]
+      },
+      "performance": {
+        "frames": 6,
+        "p50": 16.600000000000364,
+        "p95": 416.59999999999945,
+        "fps": 3.8664776388710473,
+        "droppedSimulation": 0.9998999999999996
+      },
+      "save": true,
+      "storageOK": true,
+      "audio": {
+        "state": "running",
+        "enabled": true,
+        "notes": 0,
+        "steps": 3
+      },
+      "errors": []
+    }
+  ]
+}
