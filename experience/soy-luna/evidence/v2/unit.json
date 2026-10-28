@@ -1,0 +1,114 @@
+{
+  "engine": "Node, deterministic simulation and geometry only",
+  "results": [
+    {
+      "name": "acceleration progressive",
+      "pass": true
+    },
+    {
+      "name": "brake and release have different inertia",
+      "pass": true
+    },
+    {
+      "name": "fixed time at 30/60/120 rendering Hz",
+      "pass": true
+    },
+    {
+      "name": "pause prevents movement and active clock",
+      "pass": true
+    },
+    {
+      "name": "jump and landing under gravity",
+      "pass": true
+    },
+    {
+      "name": "edge fall costs one heart, then checkpoint",
+      "pass": true
+    },
+    {
+      "name": "fall cannot charge a second time during recovery",
+      "pass": true
+    },
+    {
+      "name": "last heart leads to defeat",
+      "pass": true
+    },
+    {
+      "name": "restore preserves progress but uses safe checkpoint",
+      "pass": true
+    },
+    {
+      "name": "hostile and incomplete saves rejected",
+      "pass": true
+    },
+    {
+      "name": "time deficit reported on long frame",
+      "pass": true
+    },
+    {
+      "name": "gap and bypass geometry agree with collision",
+      "pass": true
+    },
+    {
+      "name": "complete course by deterministic ordinary inputs",
+      "pass": true
+    },
+    {
+      "name": "obstacle slows without removing a heart, then cooldown",
+      "pass": true
+    },
+    {
+      "name": "ivory shoulder is solid until its visible edge",
+      "pass": true
+    },
+    {
+      "name": "real shared skeleton with weighted geometry",
+      "pass": true
+    },
+    {
+      "name": "all character geometry finite",
+      "pass": true
+    },
+    {
+      "name": "touch ownership, independent releases, second finger cannot steal stick",
+      "pass": true
+    },
+    {
+      "name": "five figure selections by direction, speed and beat",
+      "pass": true
+    },
+    {
+      "name": "held jump awards a figure once; stationary farming blocked",
+      "pass": true
+    },
+    {
+      "name": "tap jump does not award aerial figure",
+      "pass": true
+    },
+    {
+      "name": "additive save migration preserves V1 and V2 collections",
+      "pass": true
+    },
+    {
+      "name": "all five articulated poses and morph buffers remain valid",
+      "pass": true
+    }
+  ],
+  "rig": {
+    "bones": 20,
+    "skinnedMeshes": 12,
+    "triangles": 43254,
+    "morphTargets": [
+      "clignement",
+      "sourire"
+    ],
+    "figures": [
+      "rotation",
+      "etoile",
+      "arabesque",
+      "croise",
+      "rythme"
+    ],
+    "status": "reference-fidelity-unvalidated"
+  }
+}
